@@ -3,7 +3,7 @@ from tkinter import E, Frame, IntVar, W
 from tkinter.ttk import Label, Scale, Style
 
 class LabeledScale(Frame):
-   def __init__(self, master, caption, from_, to):
+   def __init__(self, master, config, **kwargs):
       super().__init__(master, background = "cyan")
       
       style = Style()
@@ -34,3 +34,36 @@ class LabeledScale(Frame):
    
    def onCommand(self, _ = "dummy"):
       self.__value.configure(text = self.__variable.get())
+
+
+
+
+
+
+
+
+
+
+
+
+
+# {
+#    "caption":"Термокамера",
+#    "ui": [[
+#       "labeledContainer", {
+#          "caption": "Нагреватель",
+#          "children": [{
+#             "type": "labeledScale",
+#             "caption":"Задержка (с):",
+#             "range": [0, 30]
+#          }, {
+#             "type": "labeledScale",
+#             "caption": "Интенсивность (%):",
+#             "range": [0, 100]
+#          }],
+#          "repeatCount": 3
+#       }
+#    ], [
+      
+#    ]]
+# }
