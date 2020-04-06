@@ -30,22 +30,15 @@ def mergeJson(a, b, overwrite = False):
 
 class SmartWidget:
    _STYLE = Style()
+   __CLASSES = dict()
    
-   def grid(self, **kw):
-      grid = self._mergeStyles("grid")
-      
-      if not self._isFirstChild():
-         if kw.get("row", 0) and "pady" not in kw:
-            kw["pady"] = grid["pady"]
-         
-         if kw.get("column", 0) and "padx" not in kw:
-            kw["padx"] = grid["padx"]
-      
-      self.__class__.TKINTER_BASE.grid(self, **kw)
+   def __init__(self, master, ui):
+      if self.__class__.__TKINTER_BASE:
+         self.__class__.__TKINTER_BASE.__init__(self, master, **ui)
    
-   def _mergeStyles(self, key):
+   def _mergeStyles(self):
       def f(styleName):
-         s = SmartWidget._STYLE.configure(styleName, query_opt = key)
+         s = SmartWidget._STYLE.configure(styleName)
          
          return eval(s) if s else dict()
       
@@ -55,37 +48,52 @@ class SmartWidget:
       return len(self.master.children) == 1
    
    @staticmethod
+   def inflate(master, config):
+      def f(ui):
+         ui = ui.copy()
+         
+         return SmartWidget.__CLASSES[ui.pop("type")](master, ui)
+      
+      return map(f, config["ui"])
+   
+   @staticmethod
    def registerClass(clazz):
+      if not issubclass(clazz, SmartWidget):
+         raise ValueError(f"{clazz.__name__} must subclass {SmartWidget.__name__}")
+      
       clazz.STYLE = [clazz]
-      clazz.TKINTER_BASE = None
+      clazz.__TKINTER_BASE = None
       
       for base in clazz.__bases__:
          if issubclass(base, Widget):
-            clazz.TKINTER_BASE = base
+            clazz.__TKINTER_BASE = base
          
          if issubclass(base, SmartWidget):
             while base != SmartWidget:
                clazz.STYLE.append(base)
                
-               base = base.__bases__[0]
+               for b in base.__bases__:
+                  if issubclass(b, SmartWidget):
+                     base = b
+                     break
       
-      if clazz.TKINTER_BASE:
-         clazz.STYLE.append(clazz.TKINTER_BASE)
+      if clazz.__TKINTER_BASE:
+         clazz.STYLE.append(clazz.__TKINTER_BASE)
       
       clazz.STYLE = f"T{'.T'.join([clz.__name__ for clz in clazz.STYLE])}"
       
-      print(clazz.STYLE, clazz.TKINTER_BASE)
-      
       try:
-         SmartWidget._STYLE.configure(clazz.STYLE, **clazz._DEFAULT_STYLE)
+         SmartWidget._STYLE.configure(clazz.STYLE, **clazz.__DEFAULT_STYLE)
       
       except:
          pass
+      
+      SmartWidget.__CLASSES[clazz.__name__] = clazz
    
    @staticmethod
    def wrapClass(tkinterBase):
       clazz = type(tkinterBase.__name__, (SmartWidget, tkinterBase), dict())
       
-      globals()[tkinterBase.__name__] = clazz
-      
       SmartWidget.registerClass(clazz)
+      
+      return (tkinterBase.__name__, clazz)

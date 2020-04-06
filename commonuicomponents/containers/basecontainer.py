@@ -2,12 +2,10 @@ from ..smartwidget import SmartWidget, mergeJson
 
 class BaseContainer(SmartWidget):
    __DEFAULT_STYLE = {
-      "grid": {
-         "padx": [20, 0],
-         "pady": [20, 0],
-         "childPadx": [20, 0],
-         "childPady": [20, 0]
-      }
+      "padx": [20, 0],
+      "pady": [20, 0],
+      "childPadx": [20, 0],
+      "childPady": [20, 0]
    }
    
    @staticmethod

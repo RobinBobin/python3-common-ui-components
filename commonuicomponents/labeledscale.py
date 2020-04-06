@@ -60,6 +60,7 @@ LabeledScale.registerClass(LabeledScale)
          "caption": "Интенсивность (%):",
          "range": [0, 100]
       }],
+      "newColumn": False,
       "repeatCount": 3
    }, {
       
