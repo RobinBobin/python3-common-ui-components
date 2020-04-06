@@ -33,28 +33,38 @@ class SmartWidget:
    __CLASSES = dict()
    
    def __init__(self, master, ui):
+      self._newColumn = ui.pop("newColumn", False)
+      
       if self.__class__.__TKINTER_BASE:
          self.__class__.__TKINTER_BASE.__init__(self, master, **ui)
    
-   def _mergeStyles(self):
+   def _mergeStyles(self, style = None):
       def f(styleName):
          s = SmartWidget._STYLE.configure(styleName)
          
          return eval(s) if s else dict()
       
-      return mergeJson(*map(f, [self.__class__.STYLE, self["style"]]), True)
+      if not style:
+         style = self["style"]
+      
+      return mergeJson(*map(f, [self.__class__.STYLE, style]), True)
    
-   def _isFirstChild(self):
-      return len(self.master.children) == 1
+   def _isFirstChild(self, master = None):
+      if not master:
+         master = self.master
+      
+      return len(master.children) == 1
    
    @staticmethod
-   def inflate(master, config):
+   def inflate(master, configOrChildren):
       def f(ui):
          ui = ui.copy()
          
          return SmartWidget.__CLASSES[ui.pop("type")](master, ui)
       
-      return map(f, config["ui"])
+      ui = configOrChildren["ui"] if isinstance(configOrChildren, dict) else configOrChildren
+      
+      return map(f, ui)
    
    @staticmethod
    def registerClass(clazz):
