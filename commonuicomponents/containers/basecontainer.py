@@ -16,10 +16,12 @@ class BaseContainer(SmartWidget):
       self.__children = SmartWidget._inflate(self, self.__children)
    
    def grid(self, **kw):
-      for child in self.__children:
-         child.grid()
+      self.__children.grid()
       
       SmartWidget.grid(self, **kw)
+   
+   def __getitem__(self, rowColumn):
+      return self.__children[rowColumn]
    
    @staticmethod
    def _defaultStyle(style = None):

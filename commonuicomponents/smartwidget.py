@@ -28,6 +28,28 @@ def mergeJson(a, b, overwrite = False):
    
    return c
 
+
+class Children:
+   def __init__(self):
+      self.__children = dict()
+   
+   def grid(self):
+      for child in self.__children.values():
+         child.grid()
+   
+   def __getitem__(self, rowColumn):
+      return self.__children[rowColumn]
+   
+   def __iter__(self):
+      return iter(self.__children)
+   
+   def __len__(self):
+      return len(self.__children)
+   
+   def __setitem__(self, rowColumn, child):
+      self.__children[rowColumn] = child
+
+
 class SmartWidget:
    _STYLE_INSTANCE = Style()
    __CLASSES = dict()
@@ -50,8 +72,13 @@ class SmartWidget:
       return len(master.children) == 1
    
    @staticmethod
-   def inflate(master, config):
-      return SmartWidget._inflate(master, config["ui"])
+   def inflate(master, config, grid = True):
+      children = SmartWidget._inflate(master, config["ui"])
+      
+      if grid:
+         children.grid()
+      
+      return children
    
    @staticmethod
    def registerClass(clazz):
@@ -94,7 +121,7 @@ class SmartWidget:
    
    @staticmethod
    def _inflate(master, children):
-      widgets = []
+      result = Children()
       
       row = -1
       column = 0
@@ -123,6 +150,6 @@ class SmartWidget:
          grid["row"] = row
          grid["column"] = column
          
-         widgets.append(SmartWidget.__CLASSES[child.pop("type")](master, **child))
+         result[(row, column)] = SmartWidget.__CLASSES[child.pop("type")](master, **child)
       
-      return widgets
+      return result
