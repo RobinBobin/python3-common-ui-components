@@ -29,25 +29,23 @@ def mergeJson(a, b, overwrite = False):
    return c
 
 class SmartWidget:
-   _STYLE = Style()
+   _STYLE_INSTANCE = Style()
    __CLASSES = dict()
    
-   def __init__(self, master, ui):
-      self._newColumn = ui.pop("newColumn", False)
+   def __init__(self, master = None, **kw):
+      self._style = mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
-      if self.__class__.__TKINTER_BASE:
-         self.__class__.__TKINTER_BASE.__init__(self, master, **ui)
+      self.__row = kw.pop("row", None)
+      self.__column = kw.pop("column", None)
+      
+      if self.__class__._TKINTER_BASE:
+         self.__class__._TKINTER_BASE.__init__(self, master, **kw)
    
-   def _mergeStyles(self, style = None):
-      def f(styleName):
-         s = SmartWidget._STYLE.configure(styleName)
-         
-         return eval(s) if s else dict()
+   def grid(self, **kw):
+      kw["row"] = self.__row
+      kw["column"] = self.__column
       
-      if not style:
-         style = self["style"]
-      
-      return mergeJson(*map(f, [self.__class__.STYLE, style]), True)
+      self.__class__._TKINTER_BASE.grid(self, **kw)
    
    def _isFirstChild(self, master = None):
       if not master:
@@ -56,15 +54,8 @@ class SmartWidget:
       return len(master.children) == 1
    
    @staticmethod
-   def inflate(master, configOrChildren):
-      def f(ui):
-         ui = ui.copy()
-         
-         return SmartWidget.__CLASSES[ui.pop("type")](master, ui)
-      
-      ui = configOrChildren["ui"] if isinstance(configOrChildren, dict) else configOrChildren
-      
-      return map(f, ui)
+   def inflate(master, config):
+      return SmartWidget._inflate(master, config["ui"])
    
    @staticmethod
    def registerClass(clazz):
@@ -72,11 +63,11 @@ class SmartWidget:
          raise ValueError(f"{clazz.__name__} must subclass {SmartWidget.__name__}")
       
       clazz.STYLE = [clazz]
-      clazz.__TKINTER_BASE = None
+      clazz._TKINTER_BASE = None
       
       for base in clazz.__bases__:
          if issubclass(base, Widget):
-            clazz.__TKINTER_BASE = base
+            clazz._TKINTER_BASE = base
          
          if issubclass(base, SmartWidget):
             while base != SmartWidget:
@@ -87,16 +78,13 @@ class SmartWidget:
                      base = b
                      break
       
-      if clazz.__TKINTER_BASE:
-         clazz.STYLE.append(clazz.__TKINTER_BASE)
+      if clazz._TKINTER_BASE:
+         clazz.STYLE.append(clazz._TKINTER_BASE)
       
       clazz.STYLE = f"T{'.T'.join([clz.__name__ for clz in clazz.STYLE])}"
       
-      try:
-         SmartWidget._STYLE.configure(clazz.STYLE, **clazz.__DEFAULT_STYLE)
-      
-      except:
-         pass
+      if hasattr(clazz, "_DEFAULT_STYLE"):
+         SmartWidget._STYLE_INSTANCE.configure(clazz.STYLE, **clazz._DEFAULT_STYLE)
       
       SmartWidget.__CLASSES[clazz.__name__] = clazz
    
@@ -107,3 +95,29 @@ class SmartWidget:
       SmartWidget.registerClass(clazz)
       
       return (tkinterBase.__name__, clazz)
+   
+   @staticmethod
+   def _inflate(master, children):
+      widgets = []
+      
+      row = -1
+      column = 0
+      
+      for child in children:
+         child = child.copy()
+         
+         newColumn = child.pop("newColumn", False)
+         
+         if not newColumn:
+            row += 1
+         
+         else:
+            row = 0
+            column += 1
+         
+         child["row"] = row
+         child["column"] = column
+         
+         widgets.append(SmartWidget.__CLASSES[child.pop("type")](master, **child))
+      
+      return widgets

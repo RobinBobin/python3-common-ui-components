@@ -4,7 +4,7 @@ from tkinter.ttk import Label, Scale, Style
 from .smartwidget import SmartWidget
 
 class LabeledScale(SmartWidget):
-   def __init__(self, master, config, **kwargs):
+   def __init__(self, master = None, **kwargs):
    #    style = Style()
       
       CAPTION = "TLabeledScale.Caption.TLabel"

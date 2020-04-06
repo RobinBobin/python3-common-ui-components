@@ -8,23 +8,18 @@ class BaseContainer(SmartWidget):
       "childPady": [20, 0]
    }
    
-   def __init__(self, master, ui):
-      children = SmartWidget.inflate(self, ui.pop("ui"))
+   def __init__(self, master = None, **kw):
+      self.__children = kw.pop("children")
       
-      SmartWidget.__init__(self, master, ui)
+      SmartWidget.__init__(self, master, **kw)
       
-      row = -1
-      column = 0
+      self.__children = SmartWidget._inflate(self, self.__children)
+   
+   def grid(self, **kw):
+      for child in self.__children:
+         child.grid()
       
-      for child in children:
-         if not child._newColumn:
-            row += 1
-         
-         else:
-            row = 0
-            column += 1
-         
-         child.grid(row = row, column = column)
+      SmartWidget.grid(self, **kw)
    
    @staticmethod
    def _defaultStyle(style = None):
