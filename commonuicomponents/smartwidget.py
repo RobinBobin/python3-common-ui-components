@@ -35,17 +35,13 @@ class SmartWidget:
    def __init__(self, master = None, **kw):
       self._style = mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
-      self.__row = kw.pop("row", None)
-      self.__column = kw.pop("column", None)
+      self.__grid = kw.pop("grid", dict())
       
       if self.__class__._TKINTER_BASE:
          self.__class__._TKINTER_BASE.__init__(self, master, **kw)
    
    def grid(self, **kw):
-      kw["row"] = self.__row
-      kw["column"] = self.__column
-      
-      self.__class__._TKINTER_BASE.grid(self, **kw)
+      self.__class__._TKINTER_BASE.grid(self, **mergeJson(kw, self.__grid, True))
    
    def _isFirstChild(self, master = None):
       if not master:
@@ -106,7 +102,16 @@ class SmartWidget:
       for child in children:
          child = child.copy()
          
-         newColumn = child.pop("newColumn", False)
+         grid = None
+         
+         if "grid" in child:
+            grid = child["grid"]
+         
+         else:
+            grid = dict()
+            child["grid"] = grid
+         
+         newColumn = grid.pop("newColumn", False)
          
          if not newColumn:
             row += 1
@@ -115,8 +120,8 @@ class SmartWidget:
             row = 0
             column += 1
          
-         child["row"] = row
-         child["column"] = column
+         grid["row"] = row
+         grid["column"] = column
          
          widgets.append(SmartWidget.__CLASSES[child.pop("type")](master, **child))
       
