@@ -41,7 +41,7 @@ class Children:
       return self.__children[rowColumn]
    
    def __iter__(self):
-      return iter(self.__children)
+      return iter(self.__children.items())
    
    def __len__(self):
       return len(self.__children)
@@ -59,11 +59,22 @@ class SmartWidget:
       
       self.__grid = kw.pop("grid", dict())
       
-      if self.__class__._TKINTER_BASE:
-         self.__class__._TKINTER_BASE.__init__(self, master, **kw)
+      if self.__class__.__TKINTER_BASE:
+         if "style" not in kw:
+            kw["style"] = self.__class__.STYLE
+         
+         self.__class__.__TKINTER_BASE.__init__(self, master, **kw)
    
    def grid(self, **kw):
-      self.__class__._TKINTER_BASE.grid(self, **mergeJson(kw, self.__grid, True))
+      self.__class__.__TKINTER_BASE.grid(self, **mergeJson(kw, self.__grid, True))
+   
+   @property
+   def row(self):
+      return self.__grid["row"]
+   
+   @property
+   def column(self):
+      return self.__grid["column"]
    
    def _isFirstChild(self, master = None):
       if not master:
@@ -86,11 +97,11 @@ class SmartWidget:
          raise ValueError(f"{clazz.__name__} must subclass {SmartWidget.__name__}")
       
       clazz.STYLE = [clazz]
-      clazz._TKINTER_BASE = None
+      clazz.__TKINTER_BASE = None
       
       for base in clazz.__bases__:
          if issubclass(base, Widget):
-            clazz._TKINTER_BASE = base
+            clazz.__TKINTER_BASE = base
          
          if issubclass(base, SmartWidget):
             while base != SmartWidget:
@@ -101,8 +112,8 @@ class SmartWidget:
                      base = b
                      break
       
-      if clazz._TKINTER_BASE:
-         clazz.STYLE.append(clazz._TKINTER_BASE)
+      if clazz.__TKINTER_BASE:
+         clazz.STYLE.append(clazz.__TKINTER_BASE)
       
       clazz.STYLE = f"T{'.T'.join([clz.__name__ for clz in clazz.STYLE])}"
       

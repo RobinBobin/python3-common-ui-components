@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
    name="common-ui-components",
-   version="0.0.8",
+   version="0.0.9",
    author="Ruben Shalimov",
    author_email="r_shalimov@inbox.ru",
    description="tkinter.ttk-based UI components",
