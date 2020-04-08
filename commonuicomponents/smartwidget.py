@@ -76,12 +76,6 @@ class SmartWidget:
    def column(self):
       return self.__grid["column"]
    
-   def _isFirstChild(self, master = None):
-      if not master:
-         master = self.master
-      
-      return len(master.children) == 1
-   
    @staticmethod
    def inflate(master, config, grid = True):
       children = SmartWidget._inflate(master, config["ui"])
@@ -134,8 +128,8 @@ class SmartWidget:
    def _inflate(master, children):
       result = Children()
       
-      row = -1
-      column = 0
+      row = 0
+      column = -1
       
       for child in children:
          child = child.copy()
@@ -149,14 +143,15 @@ class SmartWidget:
             grid = dict()
             child["grid"] = grid
          
-         newColumn = grid.pop("newColumn", False)
+         newRow = grid.pop("newRow", False)
+         skipColumns = grid.pop("skipColumns", 0)
          
-         if not newColumn:
-            row += 1
+         if not newRow:
+            column += 1 + skipColumns
          
          else:
-            row = 0
-            column += 1
+            row += 1
+            column = skipColumns
          
          grid["row"] = row
          grid["column"] = column
