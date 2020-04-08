@@ -1,33 +1,5 @@
-from re import split
+from commonutils import StaticUtils
 from tkinter.ttk import Style, Widget
-
-def mergeJson(a, b, overwrite = False):
-   c = a.copy()
-   
-   for key, value in b.items():
-      splitKey = split("[\[\]]", key)
-      l = len(splitKey)
-      
-      if l == 1:
-         if (key not in c) or overwrite:
-            c[key] = value
-         
-         else:
-            invalidType = type(c[key]) if not isinstance(c[key], dict) else type(value) if not isinstance(value, dict) else None
-            
-            if invalidType:
-               raise ValueError(f"'{key}' exists in both JSONs but is a '{invalidType}' in one of them")
-            
-            c[key] = mergeJson(c[key], b[key])
-      
-      elif l == 3 and not len(splitKey[2]):
-         c[splitKey[0]][int(splitKey[1])] = value
-      
-      else:
-         raise ValueError(f"Something terrible happened: {key}, {splitKey}")
-   
-   return c
-
 
 class Children:
    def __init__(self):
@@ -55,7 +27,7 @@ class SmartWidget:
    __CLASSES = dict()
    
    def __init__(self, master = None, **kw):
-      self._style = mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
+      self._style = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
       self.__grid = kw.pop("grid", dict())
       
@@ -66,7 +38,7 @@ class SmartWidget:
          self.__class__.__TKINTER_BASE.__init__(self, master, **kw)
    
    def grid(self, **kw):
-      self.__class__.__TKINTER_BASE.grid(self, **mergeJson(kw, self.__grid, True))
+      self.__class__.__TKINTER_BASE.grid(self, **StaticUtils.mergeJson(kw, self.__grid, True))
    
    @property
    def row(self):
@@ -134,28 +106,38 @@ class SmartWidget:
       for child in children:
          child = child.copy()
          
-         grid = None
+         repeatCount = child.pop("repeatCount", 1)
+         text = child.pop("text", None)
+         childType = child.pop("type")
          
-         if "grid" in child:
-            grid = child["grid"]
-         
-         else:
-            grid = dict()
-            child["grid"] = grid
-         
-         newRow = grid.pop("newRow", False)
-         skipColumns = grid.pop("skipColumns", 0)
-         
-         if not newRow:
-            column += 1 + skipColumns
-         
-         else:
-            row += 1
-            column = skipColumns
-         
-         grid["row"] = row
-         grid["column"] = column
-         
-         result[(row, column)] = SmartWidget.__CLASSES[child.pop("type")](master, **child)
+         for i in range(repeatCount):
+            ch = child.copy()
+            
+            if text != None:
+               ch["text"] = text if repeatCount == 1 else text[i] if StaticUtils.isIterable(text) else f"{text}{i + 1}"
+            
+            grid = None
+            
+            if "grid" in ch:
+               grid = ch["grid"]
+            
+            else:
+               grid = dict()
+               ch["grid"] = grid
+            
+            newRow = grid.pop("newRow", False)
+            skipColumns = grid.pop("skipColumns", 0)
+            
+            if not newRow:
+               column += 1 + skipColumns
+            
+            else:
+               row += 1
+               column = skipColumns
+            
+            grid["row"] = row
+            grid["column"] = column
+            
+            result[(row, column)] = SmartWidget.__CLASSES[childType](master, **ch)
       
       return result

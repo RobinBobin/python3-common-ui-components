@@ -1,4 +1,5 @@
-from ..smartwidget import SmartWidget, mergeJson
+from commonutils import StaticUtils
+from ..smartwidget import SmartWidget
 
 class BaseContainer(SmartWidget):
    __DEFAULT_STYLE = {
@@ -55,4 +56,4 @@ class BaseContainer(SmartWidget):
    
    @staticmethod
    def _defaultStyle(style = None):
-      return mergeJson(BaseContainer.__DEFAULT_STYLE, style) if style else BaseContainer.__DEFAULT_STYLE
+      return StaticUtils.mergeJson(BaseContainer.__DEFAULT_STYLE, style) if style else BaseContainer.__DEFAULT_STYLE
