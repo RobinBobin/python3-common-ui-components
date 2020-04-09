@@ -1,4 +1,5 @@
 from commonutils import StaticUtils
+from copy import deepcopy
 from .smartwidget import SmartWidget
 
 class Children:
@@ -39,8 +40,6 @@ class CommonUIComponents:
       params = StaticUtils.mergeJson({
          "debug": False
       }, params, True)
-      
-      print(params)
       
       for key, value in params.items():
          setattr(CommonUIComponents, key.upper(), value)
@@ -98,42 +97,34 @@ class CommonUIComponents:
       result = Children()
       
       row = 0
-      column = -1
+      column = 0
       
       for child in children:
-         child = child.copy()
+         child = deepcopy(child)
          
          repeatCount = child.pop("repeatCount", 1)
          text = child.pop("text", None)
          childType = child.pop("type")
          
          for i in range(repeatCount):
-            ch = child.copy()
+            ch = deepcopy(child)
             
             if text != None:
                ch["text"] = text if repeatCount == 1 else text[i] if StaticUtils.isIterable(text) else f"{text}{i + 1}"
             
-            grid = None
+            grid = StaticUtils.getOrSetIfAbsent(ch, "grid", dict())
             
-            if "grid" in ch:
-               grid = ch["grid"]
-            
-            else:
-               grid = dict()
-               ch["grid"] = grid
-            
-            newRow = grid.pop("newRow", False)
-            skipColumns = grid.pop("skipColumns", 0)
-            
-            if not newRow:
-               column += 1 + skipColumns
-            
-            else:
-               row += 1
-               column = skipColumns
+            column += grid.pop("skipColumns", 0)
             
             grid["row"] = row
             grid["column"] = column
+            
+            if grid.pop("lastColumn", False):
+               row += 1
+               column = 0
+            
+            else:
+               column += 1
             
             result[(row, column)] = CommonUIComponents.__CLASSES[childType](master, **ch)
       

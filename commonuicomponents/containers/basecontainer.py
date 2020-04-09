@@ -4,8 +4,6 @@ from .. import CommonUIComponents
 
 class BaseContainer(SmartWidget):
    __DEFAULT_STYLE = {
-      "padx": [20, 0],
-      "pady": [20, 0],
       "childPadx": [20, 0],
       "childPady": [20, 0]
    }
@@ -30,15 +28,15 @@ class BaseContainer(SmartWidget):
    
    def grid(self, **kw):
       for _, child in self.__children:
-         child.grid(**self._getPadding(child, "childPad"))
+         child.grid(**self._getChildPadding(child))
       
       SmartWidget.grid(self, **kw)
    
-   def _getPadding(self, smartWidget, key):
+   def _getChildPadding(self, smartWidget):
       result = dict()
       
       for isY, data in enumerate((("x", "column"), ("y", "row"))):
-         padding = [int(x) for x in self._style[f"{key}{data[0]}"].split()] # TODO It can also be a scalar!
+         padding = [int(x) for x in self._style[f"childPad{data[0]}"].split()] # TODO It can also be a scalar!
          
          sentinel = getattr(smartWidget, data[1])
          
@@ -46,7 +44,7 @@ class BaseContainer(SmartWidget):
             padding[0] = 0 if not self.__padAllChildren else padding[0] / (2 if isY else 1)
          
          if self.__padAllChildren and sentinel == ((self.__rows if isY else self.__columns) - 1):
-            padding[1] = int(self._style[f"{key}x"].split()[0])
+            padding[1] = int(self._style["childPadx"].split()[0])
             
          result[f"pad{data[0]}"] = padding
       
