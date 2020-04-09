@@ -136,6 +136,8 @@ class CommonUIComponents:
             grid["row"] = row
             grid["column"] = column
             
+            result[(row, column)] = CommonUIComponents.__CLASSES[childType](master, **ch)
+            
             if multiply.lastChildAddsRow and i == multiply.count - 1:
                grid["lastColumn"] = True
             
@@ -145,7 +147,5 @@ class CommonUIComponents:
             
             else:
                column += 1
-            
-            result[(row, column)] = CommonUIComponents.__CLASSES[childType](master, **ch)
       
       return result
