@@ -23,6 +23,23 @@ class Children:
       self.__children[rowColumn] = child
 
 
+class Multiply:
+   def __init__(self, child):
+      self.__multiply = child.pop("multiply", {"count": 1})
+   
+   @property
+   def count(self):
+      return self.__multiply["count"]
+   
+   @property
+   def lastChildAddsRow(self):
+      return self.__multiply.get("lastChildAddsRow", False)
+   
+   @property
+   def offsetOfIndexInText(self):
+      return self.__multiply.get("offsetOfIndexInText", 0)
+
+
 class CommonUIComponents:
    __CLASSES = dict()
    
@@ -102,15 +119,15 @@ class CommonUIComponents:
       for child in children:
          child = deepcopy(child)
          
-         repeatCount = child.pop("repeatCount", 1)
+         multiply = Multiply(child)
          text = child.pop("text", None)
          childType = child.pop("type")
          
-         for i in range(repeatCount):
+         for i in range(multiply.count):
             ch = deepcopy(child)
             
             if text != None:
-               ch["text"] = text if repeatCount == 1 else text[i] if StaticUtils.isIterable(text) else f"{text}{i + 1}"
+               ch["text"] = text if multiply.count == 1 else text[i] if StaticUtils.isIterable(text) else f"{text}{i + 1 + multiply.offsetOfIndexInText}"
             
             grid = StaticUtils.getOrSetIfAbsent(ch, "grid", dict())
             
@@ -118,6 +135,9 @@ class CommonUIComponents:
             
             grid["row"] = row
             grid["column"] = column
+            
+            if multiply.lastChildAddsRow and i == multiply.count - 1:
+               grid["lastColumn"] = True
             
             if grid.pop("lastColumn", False):
                row += 1
