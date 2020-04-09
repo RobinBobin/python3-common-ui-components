@@ -34,14 +34,6 @@ class LabeledScale(SmartWidget):
    # def onCommand(self, _ = "dummy"):
    #    self.__value.configure(text = self.__variable.get())
 
-LabeledScale.registerClass(LabeledScale)
-
-
-
-
-
-
-
 
 
 

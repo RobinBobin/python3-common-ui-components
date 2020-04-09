@@ -1,5 +1,6 @@
 from commonutils import StaticUtils
 from ..smartwidget import SmartWidget
+from .. import CommonUIComponents
 
 class BaseContainer(SmartWidget):
    __DEFAULT_STYLE = {
@@ -15,7 +16,7 @@ class BaseContainer(SmartWidget):
       
       SmartWidget.__init__(self, master, **kw)
       
-      self.__children = SmartWidget._inflate(self, self.__children)
+      self.__children = CommonUIComponents._inflate(self, self.__children)
       
       self.__rows = 0
       self.__columns = 0
