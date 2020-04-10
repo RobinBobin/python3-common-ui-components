@@ -7,7 +7,9 @@ class SmartWidget:
    def __init__(self, master = None, **kw):
       self._style = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
-      self.__grid = kw.pop("grid", dict())
+      self.__grid = kw.pop("grid")
+      self.__rows = kw.pop("rows", 1)
+      self.__columns = kw.pop("columns", 1)
       
       if self.__class__._TKINTER_BASE:
          if "style" not in kw:
@@ -21,6 +23,14 @@ class SmartWidget:
    @property
    def row(self):
       return self.__grid["row"]
+   
+   @property
+   def rows(self):
+      return self.__rows
+   
+   @property
+   def columns(self):
+      return self.__columns
    
    @property
    def column(self):

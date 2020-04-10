@@ -1,60 +1,53 @@
+from commonutils import StaticUtils
 from math import floor, log10
 from tkinter import E, IntVar, W
-from tkinter.ttk import Label, Scale, Style
+from tkinter.ttk import Label, Scale
 from .smartwidget import SmartWidget
 
 class LabeledScale(SmartWidget):
-   def __init__(self, master = None, **kwargs):
-   #    style = Style()
+   def __init__(self, master = None, **kw):
+      super().__init__(master, **StaticUtils.mergeJson(kw, {
+         "rows": 1,
+         "columns": 3
+      }))
       
-      CAPTION = "TLabeledScale.Caption.TLabel"
+      # = Caption = #
+      self.__caption = Label(master, text = kw["text"])
       
-   #    print(style.lookup(CAPTION, "padx", default = "20 10"))
+      # = Value = #
+      self.__step = kw.get("step", 1)
       
-   #    Label(self, text = caption).grid(row = 0, column = 0, padx = (20, 10), sticky = E)
+      from_, to = [value // self.__step for value in kw["range"]]
       
-   #    self.__value = Label(self, anchor = E, text = from_, width = floor(log10(to)) + 1)
-   #    self.__value.grid(row = 0, column = 1, sticky = E)
+      self.__value = Label(master, anchor = E, text = from_ * self.__step, width = floor(log10(abs(to) * self.__step)) + 1)
       
-   #    self.__variable = IntVar()
-   #    self.__variable.set(from_)
+      # = Scale = #
+      self.__variable = IntVar()
+      self.__variable.set(from_)
       
-   #    Scale(
-   #       self,
-   #       command = self.onCommand,
-   #       from_ = from_,
-   #       length = 400,
-   #       to = to,
-   #       variable = self.__variable).grid(
-   #          row = 0,
-   #          column = 2,
-   #          padx = 20,
-   #          pady = 20)
+      self.__scale = Scale(
+         master,
+         command = self.onChanged,
+         from_ = from_,
+         length = 400,
+         to = to,
+         variable = self.__variable)
    
-   # def onCommand(self, _ = "dummy"):
-   #    self.__value.configure(text = self.__variable.get())
-
-
-
-
-
-{
-   "caption":"Термокамера",
-   "ui": [{
-      "type": "LabeledContainer",
-      "caption": "Нагреватель",
-      "children": [{
-         "type": "LabeledScale",
-         "caption": "Задержка (с):",
-         "range": [0, 30]
-      }, {
-         "type": "LabeledScale",
-         "caption": "Интенсивность (%):",
-         "range": [0, 100]
-      }],
-      "newColumn": False,
-      "repeatCount": 3
-   }, {
+   def grid(self, **kw):
+      kw["row"] = self.row
+      kw["column"] = self.column
       
-   }]
-}
+      self.__caption.grid(sticky = E, **kw)
+      
+      kw["padx"] = (20, 0)
+      
+      kw["column"] += 1
+      self.__value.grid(sticky = W + E, **kw)
+      
+      kw["column"] += 1
+      self.__scale.grid(**kw)
+   
+   def onChanged(self, _):
+      value = self.__variable.get()
+      
+      self.__value.configure(text = value * self.__step)

@@ -136,16 +136,18 @@ class CommonUIComponents:
             grid["row"] = row
             grid["column"] = column
             
-            result[(row, column)] = CommonUIComponents.__CLASSES[childType](master, **ch)
+            smartWidget = CommonUIComponents.__CLASSES[childType](master, **ch)
+            
+            result[(row, column)] = smartWidget
             
             if multiply.lastChildAddsRow and i == multiply.count - 1:
                grid["lastColumn"] = True
             
             if grid.pop("lastColumn", False):
-               row += 1
+               row += smartWidget.rows
                column = 0
             
             else:
-               column += 1
+               column += smartWidget.columns
       
       return result
