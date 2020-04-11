@@ -6,10 +6,11 @@ from .smartwidget import SmartWidget
 
 class LabeledScale(SmartWidget):
    def __init__(self, master = None, **kw):
-      super().__init__(master, **StaticUtils.mergeJson(kw, {
-         "rows": 1,
-         "columns": 3
-      }))
+      kw["rows"] = 1
+      kw["columns"] = 3
+      kw["hasValueBuffer"] = True
+      
+      super().__init__(master, **kw)
       
       # = Caption = #
       self.__caption = Label(master, text = kw["text"])
@@ -19,11 +20,13 @@ class LabeledScale(SmartWidget):
       
       from_, to = [value // self.__step for value in kw["range"]]
       
-      self.__value = Label(master, anchor = E, text = from_ * self.__step, width = floor(log10(abs(to) * self.__step)) + 1)
+      value = StaticUtils.getOrSetIfAbsent(self._valueBuffer, 0, from_)
+      
+      self.__value = Label(master, anchor = E, text = value * self.__step, width = floor(log10(abs(to) * self.__step)) + 1)
       
       # = Scale = #
       self.__variable = IntVar()
-      self.__variable.set(from_)
+      self.__variable.set(value)
       
       self.__scale = Scale(
          master,
@@ -53,3 +56,5 @@ class LabeledScale(SmartWidget):
       value = self.__variable.get()
       
       self.__value.configure(text = value * self.__step)
+      
+      StaticUtils.setSafely(self._valueBuffer, 0, value)

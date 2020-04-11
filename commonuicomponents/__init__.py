@@ -6,10 +6,6 @@ class Children:
    def __init__(self):
       self.__children = dict()
    
-   def grid(self):
-      for child in self.__children.values():
-         child.grid()
-   
    def __getitem__(self, rowColumn):
       return self.__children[rowColumn]
    
@@ -45,10 +41,11 @@ class CommonUIComponents:
    
    @staticmethod
    def inflate(master, config, grid = True):
-      children = CommonUIComponents._inflate(master, config["ui"])
+      children = CommonUIComponents._inflate(master, config["ui"], StaticUtils.getOrSetIfAbsent(config, "values", []))
       
       if grid:
-         children.grid()
+         for _, child in children:
+            child.grid()
       
       return children
    
@@ -110,7 +107,7 @@ class CommonUIComponents:
       CommonUIComponents.registerClass(type(tkinterBase.__name__, (SmartWidget, tkinterBase), dict()))
    
    @staticmethod
-   def _inflate(master, children):
+   def _inflate(master, children, parentBuffer):
       result = Children()
       
       row = 0
@@ -118,6 +115,8 @@ class CommonUIComponents:
       
       logicalRow = 0
       logicalColumn = 0
+      
+      parentBufferIndex = 0
       
       for child in children:
          child = deepcopy(child)
@@ -141,7 +140,13 @@ class CommonUIComponents:
             grid["row"] = row
             grid["column"] = column
             
+            ch["parentBuffer"] = parentBuffer
+            ch["parentBufferIndex"] = parentBufferIndex
+            
             smartWidget = CommonUIComponents.__CLASSES[childType](master, **ch)
+            
+            if smartWidget.hasValueBuffer:
+               parentBufferIndex += 1
             
             result[(logicalRow, logicalColumn)] = smartWidget
             

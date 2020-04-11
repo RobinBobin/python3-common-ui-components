@@ -8,13 +8,15 @@ class BaseContainer(SmartWidget):
       "childPady": [20, 0]
    }
    
-   def __init__(self, master = None, padAllChildren = True, **kw):
+   def __init__(self, master = None, **kw):
       self.__children = kw.pop("children")
-      self.__padAllChildren = padAllChildren
+      self.__padAllChildren = kw.pop("padAllChildren", True)
+      
+      kw["hasValueBuffer"] = True
       
       SmartWidget.__init__(self, master, **kw)
       
-      self.__children = CommonUIComponents._inflate(self, self.__children)
+      self.__children = CommonUIComponents._inflate(self, self.__children, self._valueBuffer)
       
       self.__rows = 0
       self.__columns = 0

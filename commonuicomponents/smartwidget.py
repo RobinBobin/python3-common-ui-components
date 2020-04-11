@@ -11,6 +11,12 @@ class SmartWidget:
       self.__rows = kw.pop("rows", 1)
       self.__columns = kw.pop("columns", 1)
       
+      parentBuffer = kw.pop("parentBuffer")
+      parentBufferIndex = kw.pop("parentBufferIndex")
+      
+      if kw.pop("hasValueBuffer", False):
+         self._valueBuffer = StaticUtils.getOrSetIfAbsent(parentBuffer, parentBufferIndex, [])
+      
       if self.__class__._TKINTER_BASE:
          if "style" not in kw:
             kw["style"] = self.__class__.STYLE
@@ -21,17 +27,21 @@ class SmartWidget:
       self.__class__._TKINTER_BASE.grid(self, **StaticUtils.mergeJson(kw, self.__grid, True))
    
    @property
-   def row(self):
-      return self.__grid["row"]
-   
-   @property
-   def rows(self):
-      return self.__rows
+   def column(self):
+      return self.__grid["column"]
    
    @property
    def columns(self):
       return self.__columns
    
    @property
-   def column(self):
-      return self.__grid["column"]
+   def hasValueBuffer(self):
+      return hasattr(self, "_valueBuffer")
+   
+   @property
+   def row(self):
+      return self.__grid["row"]
+   
+   @property
+   def rows(self):
+      return self.__rows
