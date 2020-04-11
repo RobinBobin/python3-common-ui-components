@@ -116,6 +116,9 @@ class CommonUIComponents:
       row = 0
       column = 0
       
+      logicalRow = 0
+      logicalColumn = 0
+      
       for child in children:
          child = deepcopy(child)
          
@@ -131,23 +134,28 @@ class CommonUIComponents:
             
             grid = StaticUtils.getOrSetIfAbsent(ch, "grid", dict())
             
-            column += grid.pop("skipColumns", 0)
+            skipColumns = grid.pop("skipColumns", 0)
+            column += skipColumns
+            logicalColumn += skipColumns
             
             grid["row"] = row
             grid["column"] = column
             
             smartWidget = CommonUIComponents.__CLASSES[childType](master, **ch)
             
-            result[(row, column)] = smartWidget
+            result[(logicalRow, logicalColumn)] = smartWidget
             
             if multiply.lastChildAddsRow and i == multiply.count - 1:
                grid["lastColumn"] = True
             
             if grid.pop("lastColumn", False):
                row += smartWidget.rows
-               column = 0
+               logicalRow += 1
+               
+               column = logicalColumn = 0
             
             else:
                column += smartWidget.columns
+               logicalColumn += 1
       
       return result

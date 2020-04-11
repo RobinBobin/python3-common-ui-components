@@ -53,6 +53,9 @@ class BaseContainer(SmartWidget):
    def __getitem__(self, rowColumn):
       return self.__children[rowColumn]
    
+   def __iter__(self):
+      return iter(self.__children)
+   
    @staticmethod
    def _defaultStyle(style = None):
       return StaticUtils.mergeJson(BaseContainer.__DEFAULT_STYLE, style) if style else BaseContainer.__DEFAULT_STYLE
