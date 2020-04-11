@@ -19,5 +19,5 @@ setuptools.setup(
    name="common-ui-components",
    packages=setuptools.find_packages(),
    url="https://github.com/RobinBobin/python3-common-ui-components",
-   version="0.0.16"
+   version="0.0.17"
 )

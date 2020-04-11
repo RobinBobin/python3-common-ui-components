@@ -39,12 +39,14 @@ class LabeledScale(SmartWidget):
       
       self.__caption.grid(sticky = E, **kw)
       
-      kw["padx"] = (20, 0)
+      padx = kw["padx"]
+      kw["padx"] = [20, 0]
       
       kw["column"] += 1
       self.__value.grid(sticky = W + E, **kw)
       
       kw["column"] += 1
+      kw["padx"][1] = padx[1] # TODO It can also be a scalar!
       self.__scale.grid(**kw)
    
    def onChanged(self, _):
