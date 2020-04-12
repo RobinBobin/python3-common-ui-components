@@ -1,7 +1,7 @@
 from commonutils import StaticUtils
 from math import floor, log10
 from tkinter import E, IntVar, W
-from tkinter.ttk import Label, Scale
+from tkinter.ttk import Frame, Label, Scale
 from .smartwidget import SmartWidget
 
 class LabeledScale(SmartWidget):
@@ -10,7 +10,12 @@ class LabeledScale(SmartWidget):
       kw["columns"] = 3
       kw["hasValueBuffer"] = True
       
+      self.__frame = Frame(master) if kw.pop("twoRows", False) else None
+      
       super().__init__(master, **kw)
+      
+      if self.__frame:
+         master = self.__frame
       
       # = Caption = #
       self.__caption = Label(master, text = kw["text"])
@@ -37,20 +42,27 @@ class LabeledScale(SmartWidget):
          variable = self.__variable)
    
    def grid(self, **kw):
-      kw["row"] = self.row
-      kw["column"] = self.column
+      kw = StaticUtils.mergeJson(kw, self._grid, True)
       
-      self.__caption.grid(sticky = E, **kw)
+      if self.__frame:
+         self.__frame.grid(**kw)
+         
+         self.__caption.grid(column = 0, row = 0, sticky = W)
+         self.__value.grid(column = 1, row = 0, sticky = E)
+         self.__scale.grid(column = 0, columnspan = 2, pady = (20, 0), row = 1)
       
-      padx = kw["padx"]
-      kw["padx"] = [20, 0]
-      
-      kw["column"] += 1
-      self.__value.grid(sticky = W + E, **kw)
-      
-      kw["column"] += 1
-      kw["padx"][1] = padx[1] # TODO It can also be a scalar!
-      self.__scale.grid(**kw)
+      else:
+         padxRight = kw["padx"][1] # TODO It can also be a scalar!
+         kw["padx"][1] = 0 # TODO It can also be a scalar!
+         self.__caption.grid(sticky = E, **kw)
+         
+         kw["column"] += 1
+         kw["padx"] = [20, 0]
+         self.__value.grid(sticky = W + E, **kw)
+         
+         kw["column"] += 1
+         kw["padx"][1] = padxRight
+         self.__scale.grid(**kw)
    
    def onChanged(self, _):
       value = self.__variable.get()
