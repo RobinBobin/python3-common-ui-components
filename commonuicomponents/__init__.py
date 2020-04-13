@@ -58,31 +58,38 @@ class CommonUIComponents:
       for key, value in params.items():
          setattr(CommonUIComponents, key.upper(), value)
       
-      from tkinter.ttk import Button, Label
+      from tkinter.ttk import Button, Label, Radiobutton
       from .containers.container import Container
       from .containers.labeledcontainer import LabeledContainer
+      from .containers.labeledradiobuttongroup import LabeledRadioButtonGroup
       from .entry import Entry
       from .labeledscale import LabeledScale
       
-      for tkinterBase in [Button, Label]:
+      for tkinterBase in [Button, Label, Radiobutton]:
          CommonUIComponents.wrapClass(tkinterBase)
       
-      for smartWidget in [Container, Entry, LabeledContainer, LabeledScale]:
+      for smartWidget in [
+         Container,
+         Entry,
+         LabeledContainer,
+         LabeledRadioButtonGroup,
+         LabeledScale
+      ]:
          CommonUIComponents.registerClass(smartWidget)
    
    @staticmethod
    def registerClass(clazz):
-      from tkinter.ttk import Widget
-      
       if not issubclass(clazz, SmartWidget):
          raise ValueError(f"{clazz.__name__} must subclass {SmartWidget.__name__}")
       
       clazz.STYLE = [clazz]
       clazz._TKINTER_BASE = None
       
+      from tkinter.ttk import Widget
+      
       for base in clazz.__bases__:
          if issubclass(base, Widget):
-            clazz._TKINTER_BASE = base
+            clazz._TKINTER_BASE = CommonUIComponents.__CLASSES["LabeledContainer"]._TKINTER_BASE if clazz.__name__ == "LabeledRadioButtonGroup" else base # TODO Dirty hack :( .
          
          if issubclass(base, SmartWidget):
             while base != SmartWidget:

@@ -9,19 +9,19 @@ class BaseContainer(SmartWidget):
    }
    
    def __init__(self, master = None, **kw):
-      self.__children = kw.pop("children")
+      self._baseContainerChildren = kw.pop("children")
       self.__padAllChildren = kw.pop("padAllChildren", True)
       
       kw["hasValueBuffer"] = True
       
       SmartWidget.__init__(self, master, **kw)
       
-      self.__children = CommonUIComponents._inflate(self, self.__children, self._valueBuffer)
+      self._inflateChildren()
       
       self.__rows = 0
       self.__columns = 0
       
-      for _, child in self.__children:
+      for _, child in self._baseContainerChildren:
          self.__rows = max(child.row, self.__rows)
          self.__columns = max(child.column, self.__columns)
       
@@ -29,7 +29,7 @@ class BaseContainer(SmartWidget):
       self.__columns += 1
    
    def grid(self, **kw):
-      for _, child in self.__children:
+      for _, child in self._baseContainerChildren:
          child.grid(**self._getChildPadding(child))
       
       SmartWidget.grid(self, **kw)
@@ -52,11 +52,14 @@ class BaseContainer(SmartWidget):
       
       return result
    
+   def _inflateChildren(self):
+      self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._valueBuffer)
+   
    def __getitem__(self, rowColumn):
-      return self.__children[rowColumn]
+      return self._baseContainerChildren[rowColumn]
    
    def __iter__(self):
-      return iter(self.__children)
+      return iter(self._baseContainerChildren)
    
    @staticmethod
    def _defaultStyle(style = None):
