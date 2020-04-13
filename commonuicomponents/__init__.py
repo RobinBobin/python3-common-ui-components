@@ -61,12 +61,13 @@ class CommonUIComponents:
       from tkinter.ttk import Button, Label
       from .containers.container import Container
       from .containers.labeledcontainer import LabeledContainer
+      from .entry import Entry
       from .labeledscale import LabeledScale
       
       for tkinterBase in [Button, Label]:
          CommonUIComponents.wrapClass(tkinterBase)
       
-      for smartWidget in [Container, LabeledContainer, LabeledScale]:
+      for smartWidget in [Container, Entry, LabeledContainer, LabeledScale]:
          CommonUIComponents.registerClass(smartWidget)
    
    @staticmethod

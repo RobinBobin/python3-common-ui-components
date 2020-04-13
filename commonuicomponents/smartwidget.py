@@ -9,8 +9,9 @@ class SmartWidget:
       
       self._style = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
-      self.__rows = kw.pop("rows", 1)
       self.__columns = kw.pop("columns", 1)
+      self.__rows = kw.pop("rows", 1)
+      self.__value = kw.pop("value", None)
       
       parentBuffer = kw.pop("parentBuffer")
       parentBufferIndex = kw.pop("parentBufferIndex")
@@ -46,3 +47,7 @@ class SmartWidget:
    @property
    def rows(self):
       return self.__rows
+   
+   @property
+   def value(self):
+      return self.__value
