@@ -58,6 +58,7 @@ class CommonUIComponents:
       for key, value in params.items():
          setattr(CommonUIComponents, key.upper(), value)
       
+      from tkinter import Canvas
       from tkinter.ttk import Button, Label, Radiobutton
       from .containers.container import Container
       from .containers.labeledcontainer import LabeledContainer
@@ -65,7 +66,7 @@ class CommonUIComponents:
       from .entry import Entry
       from .labeledscale import LabeledScale
       
-      for tkinterBase in [Button, Label, Radiobutton]:
+      for tkinterBase in [Button, Canvas, Label, Radiobutton]:
          CommonUIComponents.wrapClass(tkinterBase)
       
       for smartWidget in [
@@ -85,7 +86,7 @@ class CommonUIComponents:
       clazz.STYLE = [clazz]
       clazz._TKINTER_BASE = None
       
-      from tkinter.ttk import Widget
+      from tkinter import Widget
       
       for base in clazz.__bases__:
          if issubclass(base, Widget):
@@ -109,6 +110,9 @@ class CommonUIComponents:
          SmartWidget._STYLE_INSTANCE.configure(clazz.STYLE, **clazz._DEFAULT_STYLE)
       
       CommonUIComponents.__CLASSES[clazz.__name__] = clazz
+      
+      if CommonUIComponents.DEBUG:
+         print(f"registered {clazz} (TKINTER_BASE: {clazz._TKINTER_BASE}, STYLE = {clazz.STYLE}.")
    
    @staticmethod
    def wrapClass(tkinterBase):

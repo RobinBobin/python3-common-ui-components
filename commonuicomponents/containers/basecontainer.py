@@ -38,16 +38,23 @@ class BaseContainer(SmartWidget):
       result = dict()
       
       for isY, data in enumerate((("x", "column"), ("y", "row"))):
-         padding = [int(x) for x in self._style[f"childPad{data[0]}"].split()] # TODO It can also be a scalar!
+         padding = [int(x) for x in self._smartWidgetStyle[f"childPad{data[0]}"].split()] # TODO It can also be a scalar!
          
          sentinel = getattr(smartWidget, data[1])
          
          if not sentinel:
             padding[0] = 0 if not self.__padAllChildren else padding[0] / (2 if isY else 1)
          
-         if self.__padAllChildren and sentinel == ((self.__rows if isY else self.__columns) - 1):
-            padding[1] = int(self._style["childPadx"].split()[0])
+         if self.__padAllChildren:
+            if not isY:
+               columnspan = smartWidget._smartWidgetGrid.get("columnspan", 0)
+               
+               if columnspan:
+                  sentinel += columnspan - 1
             
+            if sentinel == ((self.__rows if isY else self.__columns) - 1):
+               padding[1] = int(self._smartWidgetStyle["childPadx"].split()[0])
+         
          result[f"pad{data[0]}"] = padding
       
       return result

@@ -3,6 +3,4 @@ from .basecontainer import BaseContainer
 from .. import CommonUIComponents
 
 class LabeledContainer(BaseContainer, LabelFrame):
-   _DEFAULT_STYLE = BaseContainer._defaultStyle({
-      "background": "pink"
-    } if CommonUIComponents.DEBUG else None)
+   _DEFAULT_STYLE = BaseContainer._defaultStyle()

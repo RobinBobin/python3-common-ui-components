@@ -3,9 +3,7 @@ from .basecontainer import BaseContainer
 from .. import CommonUIComponents
 
 class Container(BaseContainer, Frame):
-   _DEFAULT_STYLE = BaseContainer._defaultStyle({
-      "background": "lightgreen"
-    } if CommonUIComponents.DEBUG else None)
+   _DEFAULT_STYLE = BaseContainer._defaultStyle()
    
    def __init__(self, master = None, **kw):
       BaseContainer.__init__(self, master, padAllChildren = False, **kw)

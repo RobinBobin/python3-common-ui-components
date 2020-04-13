@@ -44,7 +44,7 @@ class LabeledScale(SmartWidget):
          variable = self.value)
    
    def grid(self, **kw):
-      kw = StaticUtils.mergeJson(kw, self._grid, True)
+      kw = StaticUtils.mergeJson(kw, self._smartWidgetGrid, True)
       
       if self.__frame:
          self.__frame.grid(**kw)
