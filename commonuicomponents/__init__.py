@@ -2,6 +2,18 @@ from commonutils import StaticUtils
 from copy import deepcopy
 from .smartwidget import SmartWidget
 
+class SmartWidgetProxy:
+   def __init__(self, smartWidget):
+      self.__value = smartWidget
+   
+   @property
+   def value(self):
+      return self.__value
+   
+   def __getitem__(self, key):
+      return self.__value._baseContainerChildren[key]
+
+
 class Multiply:
    def __init__(self, child):
       self.__multiply = child.pop("multiply", dict())
@@ -16,7 +28,7 @@ class Multiply:
       indexable = self.__indexables[key]
       
       if not not indexable:
-         child[key] = indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else f"{indexable}{index + 1 + self.__multiply.get('offsetOfIndexInText', 0)}"
+         child[key] = indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else "{0}{1}".format(indexable, index + 1 + self.__multiply.get(f"offsetOfIndexIn{key[0].upper()}{key[1:]}", 0))
    
    @property
    def count(self):
@@ -34,25 +46,33 @@ class CommonUIComponents:
    def inflate(master, config, grid = True):
       children = CommonUIComponents._inflate(master, config["ui"], StaticUtils.getOrSetIfAbsent(config, "values", []))
       
+      namedChildren = [dict()]
+      
       from .containers.basecontainer import BaseContainer
       
-      namedChildren = dict()
-      
-      def setNames(child):
-         if child.smartWidgetName != None:
-            namedChildren[child.smartWidgetName] = child
-            
-         if isinstance(child, BaseContainer):
-            for _, ch in child:
-               setNames(ch)
-      
-      for child in children.values():
-         if grid:
-            child.grid()
+      def setNames(proxy):
+         isNamed = proxy.value.smartWidgetName != None
          
-         setNames(child)
+         if isNamed:
+            namedChildren[-1][proxy.value.smartWidgetName] = proxy
+            
+         if isinstance(proxy.value, BaseContainer):
+            if isNamed:
+               namedChildren.append(proxy.value._baseContainerChildren)
+            
+            for p in proxy.value._baseContainerChildren.values():
+               setNames(p)
+            
+            if isNamed:
+               namedChildren.pop()
       
-      children.update(namedChildren)
+      for proxy in children.values():
+         if grid:
+            proxy.value.grid()
+         
+         setNames(proxy)
+      
+      children.update(namedChildren.pop())
       
       return children
    
@@ -167,7 +187,7 @@ class CommonUIComponents:
             if smartWidget.hasValueBuffer:
                parentBufferIndex += 1
             
-            result[(logicalRow, logicalColumn)] = smartWidget
+            result[(logicalRow, logicalColumn)] = SmartWidgetProxy(smartWidget)
             
             if multiply.lastChildAddsRow and i == multiply.count - 1:
                grid["lastColumn"] = True
