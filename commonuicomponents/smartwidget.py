@@ -11,6 +11,7 @@ class SmartWidget:
       
       self.__columns = kw.pop("columns", 1)
       self.__rows = kw.pop("rows", 1)
+      self.__smartWidgetName = kw.pop("name", None)
       self.__value = kw.pop("value", None)
       
       parentBuffer = kw.pop("parentBuffer")
@@ -49,6 +50,10 @@ class SmartWidget:
    @property
    def rows(self):
       return self.__rows
+   
+   @property
+   def smartWidgetName(self):
+      return self.__smartWidgetName
    
    @property
    def value(self):

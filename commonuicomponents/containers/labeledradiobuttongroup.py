@@ -19,5 +19,5 @@ class LabeledRadioButtonGroup(LabeledContainer):
       
       LabeledContainer._inflateChildren(self)
       
-      for index, (_, child) in enumerate(self._baseContainerChildren):
+      for index, child in enumerate(self._baseContainerChildren.values()):
          child.configure(value = index, variable = self.value)

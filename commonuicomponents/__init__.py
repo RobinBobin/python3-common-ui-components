@@ -2,23 +2,6 @@ from commonutils import StaticUtils
 from copy import deepcopy
 from .smartwidget import SmartWidget
 
-class Children:
-   def __init__(self):
-      self.__children = dict()
-   
-   def __getitem__(self, rowColumn):
-      return self.__children[rowColumn]
-   
-   def __iter__(self):
-      return iter(self.__children.items())
-   
-   def __len__(self):
-      return len(self.__children)
-   
-   def __setitem__(self, rowColumn, child):
-      self.__children[rowColumn] = child
-
-
 class Multiply:
    def __init__(self, child):
       self.__multiply = child.pop("multiply", dict())
@@ -29,13 +12,11 @@ class Multiply:
       if text and "count" not in self.__multiply and StaticUtils.isIterable(text):
          self.__multiply["count"] = len(text)
    
-   def getIndexable(self, key, index):
+   def setIndexableToChild(self, child, key, index):
       indexable = self.__indexables[key]
       
-      return indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else f"{indexable}{index + 1 + self.__multiply.get('offsetOfIndexInText', 0)}"
-   
-   def hasIndexable(self, key):
-      return not not self.__indexables[key]
+      if not not indexable:
+         child[key] = indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else f"{indexable}{index + 1 + self.__multiply.get('offsetOfIndexInText', 0)}"
    
    @property
    def count(self):
@@ -50,14 +31,30 @@ class CommonUIComponents:
    __CLASSES = dict()
    
    @staticmethod
-   def inflate(master, config, grid = True, skipTopLevel = False):
+   def inflate(master, config, grid = True):
       children = CommonUIComponents._inflate(master, config["ui"], StaticUtils.getOrSetIfAbsent(config, "values", []))
       
-      if grid:
-         for _, child in children:
-            child.grid()
+      from .containers.basecontainer import BaseContainer
       
-      return children[(0, 0)] if skipTopLevel else children
+      namedChildren = dict()
+      
+      def setNames(child):
+         if child.smartWidgetName != None:
+            namedChildren[child.smartWidgetName] = child
+            
+         if isinstance(child, BaseContainer):
+            for _, ch in child:
+               setNames(ch)
+      
+      for child in children.values():
+         if grid:
+            child.grid()
+         
+         setNames(child)
+      
+      children.update(namedChildren)
+      
+      return children
    
    @staticmethod
    def init(**params):
@@ -130,7 +127,7 @@ class CommonUIComponents:
    
    @staticmethod
    def _inflate(master, children, parentBuffer):
-      result = Children()
+      result = dict()
       
       row = 0
       column = 0
@@ -149,8 +146,7 @@ class CommonUIComponents:
          for i in range(multiply.count):
             ch = deepcopy(child)
             
-            if multiply.hasIndexable("text"):
-               ch["text"] = multiply.getIndexable("text", i)
+            multiply.setIndexableToChild(ch, "text", i)
             
             grid = StaticUtils.getOrSetIfAbsent(ch, "grid", dict())
             
@@ -164,15 +160,14 @@ class CommonUIComponents:
             ch["parentBuffer"] = parentBuffer
             ch["parentBufferIndex"] = parentBufferIndex
             
+            multiply.setIndexableToChild(ch, "name", i)
+            
             smartWidget = CommonUIComponents.__CLASSES[childType](master, **ch)
             
             if smartWidget.hasValueBuffer:
                parentBufferIndex += 1
             
             result[(logicalRow, logicalColumn)] = smartWidget
-            
-            if multiply.hasIndexable("name"):
-               result[multiply.getIndexable("name", i)] = smartWidget
             
             if multiply.lastChildAddsRow and i == multiply.count - 1:
                grid["lastColumn"] = True
