@@ -21,19 +21,26 @@ class Children:
 
 class Multiply:
    def __init__(self, child):
-      self.__multiply = child.pop("multiply", {"count": 1})
+      self.__multiply = child.pop("multiply", dict())
+      self.__text = child.pop("text", None)
+      
+      if self.__text and "count" not in self.__multiply and StaticUtils.isIterable(self.__text):
+         self.__multiply["count"] = len(self.__text)
+   
+   def getText(self, index):
+      return self.__text if "count" not in self.__multiply else self.__text[index] if StaticUtils.isIterable(self.__text) else f"{self.__text}{index + 1 + self.__multiply.get('offsetOfIndexInText', 0)}"
    
    @property
    def count(self):
-      return self.__multiply["count"]
+      return self.__multiply.get("count", 1)
+   
+   @property
+   def hasText(self):
+      return not not self.__text
    
    @property
    def lastChildAddsRow(self):
       return self.__multiply.get("lastChildAddsRow", False)
-   
-   @property
-   def offsetOfIndexInText(self):
-      return self.__multiply.get("offsetOfIndexInText", 0)
 
 
 class CommonUIComponents:
@@ -133,15 +140,14 @@ class CommonUIComponents:
       for child in children:
          child = deepcopy(child)
          
-         multiply = Multiply(child)
-         text = child.pop("text", None)
          childType = child.pop("type")
+         multiply = Multiply(child)
          
          for i in range(multiply.count):
             ch = deepcopy(child)
             
-            if text != None:
-               ch["text"] = text if multiply.count == 1 else text[i] if StaticUtils.isIterable(text) else f"{text}{i + 1 + multiply.offsetOfIndexInText}"
+            if multiply.hasText:
+               ch["text"] = multiply.getText(i)
             
             grid = StaticUtils.getOrSetIfAbsent(ch, "grid", dict())
             
