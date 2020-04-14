@@ -22,21 +22,24 @@ class Children:
 class Multiply:
    def __init__(self, child):
       self.__multiply = child.pop("multiply", dict())
-      self.__text = child.pop("text", None)
+      self.__indexables = {key: child.pop(key, None) for key in ("text", "name")}
       
-      if self.__text and "count" not in self.__multiply and StaticUtils.isIterable(self.__text):
-         self.__multiply["count"] = len(self.__text)
+      text = self.__indexables["text"]
+      
+      if text and "count" not in self.__multiply and StaticUtils.isIterable(text):
+         self.__multiply["count"] = len(text)
    
-   def getText(self, index):
-      return self.__text if "count" not in self.__multiply else self.__text[index] if StaticUtils.isIterable(self.__text) else f"{self.__text}{index + 1 + self.__multiply.get('offsetOfIndexInText', 0)}"
+   def getIndexable(self, key, index):
+      indexable = self.__indexables[key]
+      
+      return indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else f"{indexable}{index + 1 + self.__multiply.get('offsetOfIndexInText', 0)}"
+   
+   def hasIndexable(self, key):
+      return not not self.__indexables[key]
    
    @property
    def count(self):
       return self.__multiply.get("count", 1)
-   
-   @property
-   def hasText(self):
-      return not not self.__text
    
    @property
    def lastChildAddsRow(self):
@@ -47,14 +50,14 @@ class CommonUIComponents:
    __CLASSES = dict()
    
    @staticmethod
-   def inflate(master, config, grid = True):
+   def inflate(master, config, grid = True, skipTopLevel = False):
       children = CommonUIComponents._inflate(master, config["ui"], StaticUtils.getOrSetIfAbsent(config, "values", []))
       
       if grid:
          for _, child in children:
             child.grid()
       
-      return children
+      return children[(0, 0)] if skipTopLevel else children
    
    @staticmethod
    def init(**params):
@@ -146,8 +149,8 @@ class CommonUIComponents:
          for i in range(multiply.count):
             ch = deepcopy(child)
             
-            if multiply.hasText:
-               ch["text"] = multiply.getText(i)
+            if multiply.hasIndexable("text"):
+               ch["text"] = multiply.getIndexable("text", i)
             
             grid = StaticUtils.getOrSetIfAbsent(ch, "grid", dict())
             
@@ -167,6 +170,9 @@ class CommonUIComponents:
                parentBufferIndex += 1
             
             result[(logicalRow, logicalColumn)] = smartWidget
+            
+            if multiply.hasIndexable("name"):
+               result[multiply.getIndexable("name", i)] = smartWidget
             
             if multiply.lastChildAddsRow and i == multiply.count - 1:
                grid["lastColumn"] = True
