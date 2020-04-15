@@ -12,6 +12,9 @@ class SmartWidgetProxy:
    
    def __getitem__(self, key):
       return self.__value._baseContainerChildren[key]
+   
+   def __iter__(self):
+      return iter(self.__value._baseContainerChildren.items())
 
 
 class Multiply:
@@ -44,37 +47,54 @@ class CommonUIComponents:
    
    @staticmethod
    def inflate(master, config, grid = True):
-      children = CommonUIComponents._inflate(master, config["ui"], StaticUtils.getOrSetIfAbsent(config, "values", []))
+      ui = CommonUIComponents._inflate(master, config["ui"], StaticUtils.getOrSetIfAbsent(config, "values", []))
       
-      namedChildren = [dict()]
+      namedChildren = []
       
       from .containers.basecontainer import BaseContainer
       
-      def setNames(proxy):
+      def setNames(path, proxy):
          isNamed = proxy.value.smartWidgetName != None
          
          if isNamed:
-            namedChildren[-1][proxy.value.smartWidgetName] = proxy
-            
+            namedChildren.append(((*path, ), proxy))
+         
          if isinstance(proxy.value, BaseContainer):
             if isNamed:
-               namedChildren.append(proxy.value._baseContainerChildren)
+               path.append(proxy.value.smartWidgetName)
             
             for p in proxy.value._baseContainerChildren.values():
-               setNames(p)
+               setNames(path, p)
             
             if isNamed:
-               namedChildren.pop()
+               path.pop()
       
-      for proxy in children.values():
+      for proxy in ui.values():
          if grid:
             proxy.value.grid()
          
-         setNames(proxy)
+         setNames([], proxy)
       
-      children.update(namedChildren.pop())
+      if CommonUIComponents.DEBUG:
+         print("Registered names: [")
+         
+         for path, proxy in namedChildren:
+            print(path, proxy.value.smartWidgetName, type(proxy.value))
+         
+         print("]")
       
-      return children
+      for path, proxy in namedChildren:
+         u = ui
+         
+         for p in path:
+            u = u[p]
+            
+            if type(u) == SmartWidgetProxy:
+               u = u.value._baseContainerChildren
+         
+         u[proxy.value.smartWidgetName] = proxy
+      
+      return ui
    
    @staticmethod
    def init(**params):
