@@ -50,8 +50,8 @@ class LabeledScale(SmartWidget):
          self.__frame.grid(**kw)
          
          self.__caption.grid(column = 0, row = 0, sticky = W)
-         self.__value.grid(column = 1, row = 0, sticky = E)
-         self.__scale.grid(column = 0, columnspan = 2, pady = (20, 0), row = 1)
+         self.__value.grid(column = 1, padx = (20, 0), row = 0, sticky = E)
+         self.__scale.grid(column = 0, columnspan = 2, pady = (20, 0), row = 1, sticky = W + E)
       
       else:
          padxRight = kw["padx"][1] # TODO It can also be a scalar!
