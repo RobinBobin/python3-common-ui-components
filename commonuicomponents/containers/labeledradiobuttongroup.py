@@ -8,9 +8,9 @@ class LabeledRadioButtonGroup(LabeledContainer):
       
       super().__init__(master, **kw)
       
-      kw["value"].set(StaticUtils.getOrSetIfAbsent(self._valueBuffer, 0, 0))
+      kw["value"].set(StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, 0))
       
-      kw["value"].trace_add("write", lambda *_: StaticUtils.setSafely(self._valueBuffer, 0, self.value.get()))
+      kw["value"].trace_add("write", lambda *_: StaticUtils.setSafely(self._smartWidgetValueBuffer, 0, self.value.get()))
    
    def _inflateChildren(self):
       for child in self._baseContainerChildren:

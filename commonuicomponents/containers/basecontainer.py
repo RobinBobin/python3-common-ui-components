@@ -60,7 +60,7 @@ class BaseContainer(SmartWidget):
       return result
    
    def _inflateChildren(self):
-      self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._valueBuffer)
+      self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._smartWidgetValueBuffer)
    
    @staticmethod
    def _defaultStyle(style = None):

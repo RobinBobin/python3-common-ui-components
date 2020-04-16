@@ -18,7 +18,7 @@ class SmartWidget:
       parentBufferIndex = kw.pop("parentBufferIndex")
       
       if kw.pop("hasValueBuffer", False):
-         self._valueBuffer = StaticUtils.getOrSetIfAbsent(parentBuffer, parentBufferIndex, [])
+         self._smartWidgetValueBuffer = StaticUtils.getOrSetIfAbsent(parentBuffer, parentBufferIndex, [])
       
       if self.__class__._TKINTER_BASE:
          from tkinter.ttk import Widget
@@ -41,7 +41,7 @@ class SmartWidget:
    
    @property
    def hasValueBuffer(self):
-      return hasattr(self, "_valueBuffer")
+      return hasattr(self, "_smartWidgetValueBuffer")
    
    @property
    def row(self):

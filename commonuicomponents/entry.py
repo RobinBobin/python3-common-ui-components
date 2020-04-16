@@ -15,7 +15,9 @@ class Entry(SmartWidget, TtkEntry):
       
       SmartWidget.__init__(self, master, **kw)
       
-      self.value.trace_add("write", lambda *_: StaticUtils.setSafely(self._valueBuffer, 0, self.value.get()))
+      self.value.set(StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, ""))
+      
+      self.value.trace_add("write", lambda *_: StaticUtils.setSafely(self._smartWidgetValueBuffer, 0, self.value.get()))
    
    @staticmethod
    def setFont(font):

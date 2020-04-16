@@ -28,7 +28,7 @@ class LabeledScale(SmartWidget):
       
       from_, to = [value // self.__step for value in kw["range"]]
       
-      value = StaticUtils.getOrSetIfAbsent(self._valueBuffer, 0, from_)
+      value = StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, from_)
       
       self.__value = Label(master, anchor = E, text = value * self.__step, width = floor(log10(abs(to) * self.__step)) + 1)
       
@@ -71,4 +71,4 @@ class LabeledScale(SmartWidget):
       
       self.__value.configure(text = value * self.__step)
       
-      StaticUtils.setSafely(self._valueBuffer, 0, value)
+      StaticUtils.setSafely(self._smartWidgetValueBuffer, 0, value)
