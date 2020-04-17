@@ -18,6 +18,10 @@ class SmartWidgetProxy:
 
 
 class Multiply:
+   __DEFAULT_OFFSETS = {
+      "name": -1
+   }
+   
    def __init__(self, child):
       self.__multiply = child.pop("multiply", dict())
       self.__indexables = {key: child.pop(key, None) for key in ("text", "name")}
@@ -30,8 +34,8 @@ class Multiply:
    def setIndexableToChild(self, child, key, index):
       indexable = self.__indexables[key]
       
-      if not not indexable:
-         child[key] = indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else "{0}{1}".format(indexable, index + 1 + self.__multiply.get(f"offsetOfIndexIn{key[0].upper()}{key[1:]}", 0))
+      if indexable:
+         child[key] = indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else "{0}{1}".format(indexable, index + 1 + self.__multiply.get(f"offsetOfIndexIn{key.title()}", Multiply.__DEFAULT_OFFSETS.get(key, 0)))
    
    @property
    def count(self):
