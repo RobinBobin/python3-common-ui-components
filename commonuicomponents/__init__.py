@@ -114,19 +114,21 @@ class CommonUIComponents:
       from .containers.container import Container
       from .containers.labeledcontainer import LabeledContainer
       from .containers.labeledradiobuttongroup import LabeledRadioButtonGroup
+      from .checkbutton import Checkbutton
       from .entry import Entry
       from .labeledscale import LabeledScale
       
-      for tkinterBase in [Button, Canvas, Label, Radiobutton]:
+      for tkinterBase in (Button, Canvas, Label, Radiobutton):
          CommonUIComponents.wrapClass(tkinterBase)
       
-      for smartWidget in [
+      for smartWidget in (
+         Checkbutton,
          Container,
          Entry,
          LabeledContainer,
          LabeledRadioButtonGroup,
          LabeledScale
-      ]:
+      ):
          CommonUIComponents.registerClass(smartWidget)
    
    @staticmethod
