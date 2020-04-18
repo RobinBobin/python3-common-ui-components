@@ -7,6 +7,7 @@ class SmartWidget:
    def __init__(self, master = None, **kw):
       self._smartWidgetGrid = kw.pop("grid")
       
+      # Can be reset in children.
       self._smartWidgetStyle = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
       self.__columns = kw.pop("columns", 1)

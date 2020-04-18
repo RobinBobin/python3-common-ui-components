@@ -16,6 +16,16 @@ class BaseContainer(SmartWidget):
       
       SmartWidget.__init__(self, master, **kw)
       
+      childPad = dict()
+      
+      for key in [f"childPad{key}" for key in "xy"]:
+         cpad = self._smartWidgetGrid.pop(f"{key}", None)
+         
+         if cpad:
+            childPad[key] = cpad
+      
+      self._smartWidgetStyle = StaticUtils.mergeJson(self._smartWidgetStyle, childPad, True)
+      
       self._inflateChildren()
       
       self.__rows = 0
