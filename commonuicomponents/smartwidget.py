@@ -1,8 +1,10 @@
 from commonutils import StaticUtils
+from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
 from tkinter.ttk import Style
 
 class SmartWidget:
    _STYLE_INSTANCE = Style()
+   __FONT = None
    
    def __init__(self, master = None, **kw):
       self._smartWidgetGrid = kw.pop("grid")
@@ -59,3 +61,27 @@ class SmartWidget:
    @property
    def value(self):
       return self.__value
+   
+   def _initValueAndTraceAdd(self):
+      self.__value.set(StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, self.__value.get()))
+         
+      self.__value.trace_add("write", lambda *_: StaticUtils.setSafely(self._smartWidgetValueBuffer, 0, self.__value.get()))
+   
+   @staticmethod
+   def setFont(font):
+      SmartWidget.__FONT = font
+   
+   @staticmethod
+   def _setFont(kw):
+      if "font" not in kw and SmartWidget.__FONT:
+         kw["font"] = SmartWidget.__FONT
+   
+   @staticmethod
+   def _setVariable(kw, defaultTypeName, variableKey, defaultValueKey = "value", setHasValueBuffer = True):
+      value = eval(f"{kw.pop('valueType', defaultTypeName)}()")
+      value.set(kw.get(defaultValueKey, value.get()))
+      
+      kw["value"] = kw[variableKey] = value
+      
+      if setHasValueBuffer:
+         kw["hasValueBuffer"] = True

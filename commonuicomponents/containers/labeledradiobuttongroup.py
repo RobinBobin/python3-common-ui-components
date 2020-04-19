@@ -1,16 +1,12 @@
-from commonutils import StaticUtils
-from tkinter import IntVar
 from .labeledcontainer import LabeledContainer
 
 class LabeledRadioButtonGroup(LabeledContainer):
    def __init__(self, master = None, **kw):
-      kw["value"] = IntVar()
+      LabeledContainer._setVariable(kw, "IntVar", "value")
       
       super().__init__(master, **kw)
       
-      kw["value"].set(StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, 0))
-      
-      kw["value"].trace_add("write", lambda *_: StaticUtils.setSafely(self._smartWidgetValueBuffer, 0, self.value.get()))
+      self._initValueAndTraceAdd()
    
    def _inflateChildren(self):
       for child in self._baseContainerChildren:

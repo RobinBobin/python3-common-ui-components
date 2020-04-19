@@ -117,6 +117,7 @@ class CommonUIComponents:
       from .checkbutton import Checkbutton
       from .entry import Entry
       from .labeledscale import LabeledScale
+      from .spinbox import Spinbox
       
       for tkinterBase in (Button, Canvas, Label, Radiobutton):
          CommonUIComponents.wrapClass(tkinterBase)
@@ -127,7 +128,8 @@ class CommonUIComponents:
          Entry,
          LabeledContainer,
          LabeledRadioButtonGroup,
-         LabeledScale
+         LabeledScale,
+         Spinbox
       ):
          CommonUIComponents.registerClass(smartWidget)
    
