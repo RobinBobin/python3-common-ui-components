@@ -1,5 +1,7 @@
 from commonutils import StaticUtils
 from copy import deepcopy
+from .config import Config
+from .staticutils import StaticUtils
 from .ttk.smartwidget import SmartWidget
 
 class SmartWidgetProxy:
