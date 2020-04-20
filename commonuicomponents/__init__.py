@@ -1,6 +1,6 @@
 from commonutils import StaticUtils
 from copy import deepcopy
-from .smartwidget import SmartWidget
+from .ttk.smartwidget import SmartWidget
 
 class SmartWidgetProxy:
    def __init__(self, smartWidget):
@@ -55,7 +55,7 @@ class CommonUIComponents:
       
       namedChildren = []
       
-      from .containers.basecontainer import BaseContainer
+      from .ttk.containers.basecontainer import BaseContainer
       
       def setNames(path, proxy):
          isNamed = proxy.value.smartWidgetName != None
@@ -111,13 +111,14 @@ class CommonUIComponents:
       
       from tkinter import Canvas
       from tkinter.ttk import Button, Label, Radiobutton
-      from .containers.container import Container
-      from .containers.labeledcontainer import LabeledContainer
-      from .containers.labeledradiobuttongroup import LabeledRadioButtonGroup
-      from .checkbutton import Checkbutton
-      from .entry import Entry
-      from .labeledscale import LabeledScale
-      from .spinbox import Spinbox
+      from .ttk.containers.container import Container
+      from .ttk.containers.labeledcontainer import LabeledContainer
+      from .ttk.containers.labeledradiobuttongroup import LabeledRadioButtonGroup
+      from .ttk.checkbutton import Checkbutton
+      from .ttk.entry import Entry
+      from .ttk.labeledscale import LabeledScale
+      from .ttk.spinbox import Spinbox
+      from .ttk.statefulbutton import StatefulButton
       
       for tkinterBase in (Button, Canvas, Label, Radiobutton):
          CommonUIComponents.wrapClass(tkinterBase)
@@ -129,7 +130,8 @@ class CommonUIComponents:
          LabeledContainer,
          LabeledRadioButtonGroup,
          LabeledScale,
-         Spinbox
+         Spinbox,
+         StatefulButton
       ):
          CommonUIComponents.registerClass(smartWidget)
    
@@ -167,7 +169,7 @@ class CommonUIComponents:
       CommonUIComponents.__CLASSES[clazz.__name__] = clazz
       
       if CommonUIComponents.DEBUG:
-         print(f"registered {clazz} (TKINTER_BASE: {clazz._TKINTER_BASE}, STYLE = {clazz.STYLE}.")
+         print(f"registered {clazz} (TKINTER_BASE: {clazz._TKINTER_BASE}, STYLE: '{clazz.STYLE}'.")
    
    @staticmethod
    def wrapClass(tkinterBase):

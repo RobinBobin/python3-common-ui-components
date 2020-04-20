@@ -5,7 +5,7 @@ class Entry(SmartWidget, TtkEntry):
    def __init__(self, master = None, **kw):
       SmartWidget._setFont(kw)
       
-      SmartWidget._setVariable(kw, "StringVar", "textvariable", "text")
+      SmartWidget._setVariable(kw, "StringVar", defaultValueKey = "text", variableKey = "textvariable")
       
       SmartWidget.__init__(self, master, **kw)
       

@@ -1,6 +1,6 @@
 from commonutils import StaticUtils
 from ..smartwidget import SmartWidget
-from .. import CommonUIComponents
+from ... import CommonUIComponents
 
 class BaseContainer(SmartWidget):
    __DEFAULT_STYLE = {

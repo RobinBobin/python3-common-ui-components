@@ -77,11 +77,14 @@ class SmartWidget:
          kw["font"] = SmartWidget.__FONT
    
    @staticmethod
-   def _setVariable(kw, defaultTypeName, variableKey, defaultValueKey = "value", setHasValueBuffer = True):
+   def _setVariable(kw, defaultTypeName, defaultValueKey = "value", setHasValueBuffer = True, variableKey = None):
       value = eval(f"{kw.pop('valueType', defaultTypeName)}()")
       value.set(kw.get(defaultValueKey, value.get()))
       
-      kw["value"] = kw[variableKey] = value
+      kw["value"] = value
+      
+      if variableKey:
+         kw[variableKey] = value
       
       if setHasValueBuffer:
          kw["hasValueBuffer"] = True

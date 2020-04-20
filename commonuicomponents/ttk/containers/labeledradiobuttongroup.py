@@ -2,7 +2,7 @@ from .labeledcontainer import LabeledContainer
 
 class LabeledRadioButtonGroup(LabeledContainer):
    def __init__(self, master = None, **kw):
-      LabeledContainer._setVariable(kw, "IntVar", "value")
+      LabeledContainer._setVariable(kw, "IntVar")
       
       super().__init__(master, **kw)
       
