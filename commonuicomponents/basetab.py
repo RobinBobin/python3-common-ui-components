@@ -23,13 +23,20 @@ class BaseTab(Frame):
          self._ui = CommonUIComponents.inflate(self._frame, self._config)
    
    @staticmethod
-   def load(notebook, wholeConfig, tabsDir, **baseTabKw):
+   def load(notebook, wholeConfig, **baseTabKw):
       from importlib import import_module
       
-      for module, config in wholeConfig["tabs"].items():
-         module = import_module(f"{tabsDir}.{module}")
+      tabs = dict()
+      tabsDir = wholeConfig["tabsDir"]
+      
+      for name, config in wholeConfig["tabs"].items():
+         module = import_module(f"{tabsDir}.{name}")
          
          tab = module.Tab(notebook, **baseTabKw)
          tab._inflate(config)
          
+         tabs[name] = tab
+         
          notebook.add(tab, text = tab.caption)
+      
+      return tabs
