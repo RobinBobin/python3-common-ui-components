@@ -1,6 +1,7 @@
 from json import dump, load
 from pathlib import Path
 from platform import system
+from .staticutils import StaticUtils
 
 class Result:
    def __init__(self, configCreated):
@@ -11,7 +12,6 @@ class Result:
          widgetFont = Config._CONFIG.get("widgetFont", "")
          
          if type(widgetFont) != str and len(widgetFont) > 1:
-            from .staticutils import StaticUtils
             widgetFont[1] = StaticUtils.round(widgetFont[1] / 1.2)
    
    def __bool__(self):
@@ -40,7 +40,6 @@ class Config(metaclass = ConfigMeta):
             dump(Config._CONFIG, f, ensure_ascii = False, indent = 3)
       
       except Exception as e:
-         from .staticutils import StaticUtils
          StaticUtils.showerror(e)
    
    @staticmethod
@@ -49,6 +48,7 @@ class Config(metaclass = ConfigMeta):
          try:
             with open(path, encoding = "utf-8") as f:
                Config._CONFIG = load(f)
+               StaticUtils.TITLE = Config["title"]
          
          except FileNotFoundError:
             pass

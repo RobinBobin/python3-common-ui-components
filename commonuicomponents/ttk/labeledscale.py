@@ -1,5 +1,4 @@
 from commonutils import StaticUtils
-from math import floor, log10
 from tkinter import E, IntVar, W
 from tkinter.ttk import Frame, Label, Scale
 from .smartwidget import SmartWidget
@@ -30,7 +29,7 @@ class LabeledScale(SmartWidget):
       
       value = StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, from_)
       
-      self.__value = Label(master, anchor = E, text = value * self.__step, width = floor(log10(abs(to) * self.__step)) + 1)
+      self.__value = Label(master, anchor = E, text = value * self.__step, width = max(StaticUtils.getPlaces([x * self.__step for x in (from_, to)])))
       
       # = Scale = #
       self.value.set(value)
