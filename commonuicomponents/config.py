@@ -11,7 +11,8 @@ class Result:
          widgetFont = Config._CONFIG.get("widgetFont", "")
          
          if type(widgetFont) != str and len(widgetFont) > 1:
-            widgetFont[1] /= 1.2
+            from .staticutils import StaticUtils
+            widgetFont[1] = StaticUtils.round(widgetFont[1] / 1.2)
    
    def __bool__(self):
       return self.__configCreated

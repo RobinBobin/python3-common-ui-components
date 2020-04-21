@@ -1,1 +1,1 @@
-git commit && git push push && ./make.sh && pip install .
+git commit && git push && ./make.sh && pip install .
