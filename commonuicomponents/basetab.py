@@ -11,6 +11,14 @@ class BaseTab(Frame):
    def caption(self):
       return self._config["caption"]
    
+   def getValue(self, *keys):
+      proxy = self._ui
+      
+      for key in keys:
+         proxy = proxy[key]
+      
+      return proxy.value.value.get()
+   
    def onDeleteWindow(self):
       pass
    
