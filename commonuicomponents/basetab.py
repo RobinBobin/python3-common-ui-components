@@ -1,4 +1,6 @@
+from importlib import import_module
 from tkinter.ttk import Frame
+from .ttk import CommonUIComponents
 
 class BaseTab(Frame):
    def __init__(self, master = None, **kw):
@@ -26,13 +28,17 @@ class BaseTab(Frame):
       self._config = config
       
       if "ui" in self._config:
-         from commonuicomponents import CommonUIComponents
-         
          self._ui = CommonUIComponents.inflate(self._frame, self._config)
-   
-   @staticmethod
-   def load(notebook, wholeConfig, **baseTabKw):
-      from importlib import import_module
+
+
+class BaseTabLoader:
+   def load(self, notebook, wholeConfig, **baseTabKw):
+      self.__notebook = notebook
+      self.__wholeConfig = wholeConfig
+      
+      notebook.bind("<<NotebookTabChanged>>", self._onTabChanged)
+      
+      selectedIndex = wholeConfig.get("selectedIndex", 0)
       
       tabs = dict()
       tabsDir = wholeConfig["tabsDir"]
@@ -47,4 +53,9 @@ class BaseTab(Frame):
          
          notebook.add(tab, text = tab.caption)
       
+      notebook.select(selectedIndex)
+      
       return tabs
+   
+   def _onTabChanged(self, event):
+      self.__wholeConfig["selectedIndex"] = self.__notebook.index(self.__notebook.select())

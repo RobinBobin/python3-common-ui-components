@@ -43,6 +43,10 @@ class Config(metaclass = ConfigMeta):
          StaticUtils.showerror(e)
    
    @staticmethod
+   def get(key, default):
+      return Config._CONFIG.get(key, default)
+   
+   @staticmethod
    def load():
       for configCreated, path in enumerate(Config.__PATHS):
          try:
