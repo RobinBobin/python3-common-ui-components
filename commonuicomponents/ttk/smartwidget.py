@@ -1,9 +1,7 @@
 from commonutils import StaticUtils
 from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
-from tkinter.ttk import Style
 
 class SmartWidget:
-   _STYLE_INSTANCE = Style()
    __FONT = None
    
    def __init__(self, master = None, **kw):

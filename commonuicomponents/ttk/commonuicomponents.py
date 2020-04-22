@@ -1,4 +1,5 @@
 from copy import deepcopy
+from tkinter.ttk import Style
 from .multiplier import Multiplier
 from .smartwidget import SmartWidget
 from .smartwidgetproxy import SmartWidgetProxy
@@ -66,6 +67,8 @@ class CommonUIComponents:
       
       for key, value in params.items():
          setattr(CommonUIComponents, key.upper(), value)
+      
+      SmartWidget._STYLE_INSTANCE = Style()
       
       from tkinter import Canvas
       from tkinter.ttk import Button, Label, Radiobutton
