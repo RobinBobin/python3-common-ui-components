@@ -46,7 +46,8 @@ class LabeledScale(SmartWidget):
       kw = StaticUtils.mergeJson(kw, self._smartWidgetGrid, True)
       
       if self.__frame:
-         self.__frame.grid(**kw)
+         self.__frame.columnconfigure(1, weight = 1)
+         self.__frame.grid(sticky = W + E, **kw)
          
          self.__caption.grid(column = 0, row = 0, sticky = W)
          self.__value.grid(column = 1, padx = (20, 0), row = 0, sticky = E)
