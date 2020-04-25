@@ -22,7 +22,7 @@ class BaseTab(Frame):
       for key in keys:
          proxy = proxy[key]
       
-      return proxy.value.value.get()
+      return proxy.value.getValue()
    
    def _inflate(self, config):
       self._config = config

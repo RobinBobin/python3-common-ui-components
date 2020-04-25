@@ -5,6 +5,8 @@ from .smartwidget import SmartWidget
 
 class LabeledScale(SmartWidget):
    def __init__(self, master = None, **kw):
+      self.__multiplyValue = kw.pop("multiplyValue", False)
+      
       twoRows = kw.pop("twoRows", False)
       
       kw["columns"] = 1 if twoRows else 3
@@ -32,7 +34,7 @@ class LabeledScale(SmartWidget):
       self.__value = Label(master, anchor = E, text = value * self.__step, width = max(StaticUtils.getPlaces([x * self.__step for x in (from_, to)])))
       
       # = Scale = #
-      self.value.set(value)
+      self.getRawValue().set(value)
       
       self.__scale = Scale(
          master,
@@ -40,7 +42,10 @@ class LabeledScale(SmartWidget):
          from_ = from_,
          length = 400,
          to = to,
-         variable = self.value)
+         variable = self.getRawValue())
+   
+   def getValue(self):
+      return super().getValue() * (self.__step if self.__multiplyValue else 1)
    
    def grid(self, **kw):
       kw = StaticUtils.mergeJson(kw, self._smartWidgetGrid, True)
@@ -67,7 +72,7 @@ class LabeledScale(SmartWidget):
          self.__scale.grid(**kw)
    
    def onChanged(self, _):
-      value = self.value.get()
+      value = self.getRawValue().get()
       
       self.__value.configure(text = value * self.__step)
       

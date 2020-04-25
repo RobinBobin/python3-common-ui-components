@@ -1,6 +1,6 @@
 from tkinter.ttk import Spinbox as TtkSpinbox
 from .smartwidget import SmartWidget
-from ..staticutils import StaticUtils
+from ...staticutils import StaticUtils
 
 class Spinbox(SmartWidget, TtkSpinbox):
    def __init__(self, master = None, **kw):

@@ -29,6 +29,12 @@ class SmartWidget:
          
          self.__class__._TKINTER_BASE.__init__(self, master, **kw)
    
+   def getRawValue(self):
+      return self.__value
+   
+   def getValue(self):
+      return self.__value.get()
+   
    def grid(self, **kw):
       self.__class__._TKINTER_BASE.grid(self, **StaticUtils.mergeJson(kw, self._smartWidgetGrid, True))
    
@@ -55,10 +61,6 @@ class SmartWidget:
    @property
    def smartWidgetName(self):
       return self.__smartWidgetName
-   
-   @property
-   def value(self):
-      return self.__value
    
    def _initValueAndTraceAdd(self):
       self.__value.set(StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, self.__value.get()))

@@ -1,8 +1,8 @@
 from copy import deepcopy
 from tkinter.ttk import Style
 from .multiplier import Multiplier
-from .smartwidget import SmartWidget
 from .smartwidgetproxy import SmartWidgetProxy
+from .widgets.smartwidget import SmartWidget
 from ..staticutils import StaticUtils
 
 class CommonUIComponents:
@@ -75,11 +75,11 @@ class CommonUIComponents:
       from .containers.container import Container
       from .containers.labeledcontainer import LabeledContainer
       from .containers.labeledradiobuttongroup import LabeledRadioButtonGroup
-      from .checkbutton import Checkbutton
-      from .entry import Entry
-      from .labeledscale import LabeledScale
-      from .spinbox import Spinbox
-      from .statefulbutton import StatefulButton
+      from .widgets.checkbutton import Checkbutton
+      from .widgets.entry import Entry
+      from .widgets.labeledscale import LabeledScale
+      from .widgets.spinbox import Spinbox
+      from .widgets.statefulbutton import StatefulButton
       
       for tkinterBase in (Button, Canvas, Label, Radiobutton):
          CommonUIComponents.wrapClass(tkinterBase)

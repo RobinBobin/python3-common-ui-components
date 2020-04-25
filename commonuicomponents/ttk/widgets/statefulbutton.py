@@ -12,8 +12,8 @@ class StatefulButton(SmartWidget, Button):
       self.__setText()
    
    def nextState(self):
-      self.value.set((self.value.get() + 1) % len(self.__states))
+      self.getRawValue().set((self.getValue() + 1) % len(self.__states))
       self.__setText()
    
    def __setText(self):
-      self["text"] = self.__states[self.value.get()]
+      self["text"] = self.__states[self.getValue()]

@@ -1,0 +1,1 @@
+from .smartwidget import SmartWidget
