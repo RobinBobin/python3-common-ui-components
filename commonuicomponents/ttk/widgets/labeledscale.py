@@ -8,6 +8,7 @@ class LabeledScale(SmartWidget):
       self.__multiplyValue = kw.pop("multiplyValue", False)
       
       twoRows = kw.pop("twoRows", False)
+      value = kw.pop("value", None)
       
       kw["columns"] = 1 if twoRows else 3
       kw["rows"] = 1
@@ -27,9 +28,9 @@ class LabeledScale(SmartWidget):
       # = Value = #
       self.__step = kw.get("step", 1)
       
-      from_, to = [value // self.__step for value in kw["range"]]
+      from_, to = [v // self.__step for v in kw["range"]]
       
-      value = StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, from_)
+      value = StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, from_ if value == None else value)
       
       self.__value = Label(master, anchor = E, text = value * self.__step, width = max(StaticUtils.getPlaces([x * self.__step for x in (from_, to)])))
       
