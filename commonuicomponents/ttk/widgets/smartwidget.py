@@ -1,4 +1,5 @@
 from commonutils import StaticUtils
+from numbers import Number
 from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
 
 class SmartWidget:
@@ -9,6 +10,18 @@ class SmartWidget:
       
       # Can be reset in children.
       self._smartWidgetStyle = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
+      
+      for key, value in self._smartWidgetStyle.items():
+         k = key.casefold()
+         
+         for axis in "xy":
+            if f"pad{axis}" in k:
+               value = [value] if isinstance(value, Number) else [float(v) for v in value.split()] if isinstance(value, str) else None
+               
+               if len(value) == 1:
+                  value.append(value[0])
+               
+               self._smartWidgetStyle[key] = value
       
       self.__columns = kw.pop("columns", 1)
       self.__rows = kw.pop("rows", 1)

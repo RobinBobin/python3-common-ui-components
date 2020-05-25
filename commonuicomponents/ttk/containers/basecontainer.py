@@ -49,10 +49,7 @@ class BaseContainer(SmartWidget):
       for isY, data in enumerate((("x", "column"), ("y", "row"))):
          padKey = f"pad{data[0]}"
          
-         padding = [int(x) for x in smartWidget._smartWidgetStyle.get(padKey, self._smartWidgetStyle[f"childPad{data[0]}"]).split()]
-         
-         if len(padding) == 1:
-            padding.append(padding[0])
+         padding = smartWidget._smartWidgetStyle.get(padKey, self._smartWidgetStyle[f"childPad{data[0]}"]).copy()
          
          sentinel = getattr(smartWidget, data[1])
          
@@ -67,7 +64,7 @@ class BaseContainer(SmartWidget):
                   sentinel += columnspan - 1
             
             if sentinel == ((self.__rows if isY else self.__columns) - 1):
-               padding[1] = int(self._smartWidgetStyle["childPadx"].split()[0]) # TODO It can also be a scalar!
+               padding[1] = self._smartWidgetStyle["childPadx"][0]
          
          result[padKey] = padding
       
