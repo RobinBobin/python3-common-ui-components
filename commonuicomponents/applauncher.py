@@ -64,7 +64,22 @@ class AppLauncher:
       self.__root.style.configure("Horizontal.TScrollbar", arrowsize = 25)
       self.__root.style.configure("Vertical.TScrollbar", arrowsize = 25)
       self.__root.style.configure("TSpinbox", arrowsize = 30)
-      self.__root.style.configure("LGreen.TContainer.TBaseContainer.TFrame", background = "lightgreen")
+      
+      colors = {
+         "Cyan": "cyan",
+         "LGreen": "lightgreen",
+         "Pink": "pink",
+         "Yellow": "yellow"
+      }
+      
+      styles = {
+         "": "Frame",
+         "Labeled": "Labelframe"
+      }
+      
+      for style in styles.items():
+         for color in colors.items():
+            self.__root.style.configure(f"{color[0]}.T{style[0]}Container.TBaseContainer.T{style[1]}", background = color[1])
    
    def _getCommonUIComponentsInitParams(self):
       return dict()
