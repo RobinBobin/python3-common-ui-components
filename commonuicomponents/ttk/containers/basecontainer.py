@@ -18,7 +18,7 @@ class BaseContainer(SmartWidget):
       childPad = dict()
       
       for key in [f"childPad{key}" for key in "xy"]:
-         cpad = self._smartWidgetGrid.pop(f"{key}", None)
+         cpad = self._smartWidgetGrid.pop(key, None)
          
          if cpad:
             childPad[key] = cpad
