@@ -3,7 +3,7 @@ from .smartwidget import SmartWidget
 from ...staticutils import StaticUtils
 
 class Spinbox(SmartWidget, TtkSpinbox):
-   def __init__(self, master = None, **kw):
+   def __init__(self, master, **kw):
       SmartWidget._setFont(kw)
       SmartWidget._setVariable(kw, "IntVar", variableKey = "textvariable")
       

@@ -2,10 +2,10 @@ from tkinter.ttk import Button
 from .smartwidget import SmartWidget
 
 class StatefulButton(SmartWidget, Button):
-   def __init__(self, master = None, **kw):
+   def __init__(self, master, **kw):
       self.__states = kw.pop("states")
       
-      SmartWidget._setVariable(kw, "IntVar", setHasValueBuffer = False)
+      SmartWidget._setVariable(kw, "IntVar")
       
       SmartWidget.__init__(self, master, **kw)
       

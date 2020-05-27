@@ -4,7 +4,7 @@ from tkinter.ttk import Frame, Label, Scale
 from .smartwidget import SmartWidget
 
 class LabeledScale(SmartWidget):
-   def __init__(self, master = None, **kw):
+   def __init__(self, master, **kw):
       self.__multiplyValue = kw.pop("multiplyValue", False)
       
       twoRows = kw.pop("twoRows", False)
@@ -12,7 +12,6 @@ class LabeledScale(SmartWidget):
       
       kw["columns"] = 1 if twoRows else 3
       kw["rows"] = 1
-      kw["hasValueBuffer"] = True
       kw["value"] = IntVar()
       
       self.__frame = Frame(master) if twoRows else None
@@ -30,16 +29,16 @@ class LabeledScale(SmartWidget):
       
       from_, to = [v // self.__step for v in kw["range"]]
       
-      value = StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, from_ if value == None else value)
+      value = StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "", from_ if value == None else value)
       
-      self.__value = Label(master, anchor = E, text = value * self.__step, width = max(StaticUtils.getPlaces([x * self.__step for x in (from_, to)])))
+      self.__value = Label(master, anchor = E, width = max(StaticUtils.getPlaces([x * self.__step for x in (from_, to)])))
       
       # = Scale = #
+      self.getRawValue().trace_add("write", self.onChanged)
       self.getRawValue().set(value)
       
       self.__scale = Scale(
          master,
-         command = self.onChanged,
          from_ = from_,
          length = 400,
          to = to,
@@ -72,9 +71,9 @@ class LabeledScale(SmartWidget):
          kw["padx"][1] = padxRight
          self.__scale.grid(**kw)
    
-   def onChanged(self, _):
+   def onChanged(self, *_):
       value = self.getRawValue().get()
       
-      self.__value.configure(text = value * self.__step)
+      self.__value["text"] = value * self.__step
       
-      StaticUtils.setSafely(self._smartWidgetValueBuffer, 0, value)
+      self._getValueStorage()[""] = value

@@ -7,13 +7,21 @@ class BaseContainer(SmartWidget):
       "childPady": [20, 0]
    }
    
-   def __init__(self, master = None, **kw):
+   def __init__(self, master, **kw):
       self._baseContainerChildren = kw.pop("children")
+      self._baseContainerNamedChildren = dict()
+      
       self.__padAllChildren = kw.pop("padAllChildren", True)
       
-      kw["hasValueBuffer"] = True
-      
       SmartWidget.__init__(self, master, **kw)
+      
+      if not isinstance(master, BaseContainer):
+         self._parentContainer = None
+         self._topLevelContainer = self
+      
+      if self._smartWidgetName:
+         self._namePrefix = self._namePrefix.copy()
+         self._namePrefix.append(self._smartWidgetName)
       
       childPad = dict()
       
@@ -30,18 +38,36 @@ class BaseContainer(SmartWidget):
       self.__rows = 0
       self.__columns = 0
       
-      for proxy in self._baseContainerChildren.values():
-         self.__rows = max(proxy.value.row, self.__rows)
-         self.__columns = max(proxy.value.column, self.__columns)
+      for widget in self._baseContainerChildren.values():
+         self.__rows = max(widget.row, self.__rows)
+         self.__columns = max(widget.column, self.__columns)
       
       self.__rows += 1
       self.__columns += 1
    
+   def getSmartWidget(self, *keys, named = True):
+      result = None
+      
+      if not len(keys):
+         result = self._baseContainerNamedChildren if named else self._baseContainerChildren
+      
+      else:
+         result = self
+         
+         for key in keys:
+            result = (result._baseContainerNamedChildren if isinstance(key, str) else result._baseContainerChildren)[key]
+      
+      return result
+   
    def grid(self, **kw):
-      for proxy in self._baseContainerChildren.values():
-         proxy.value.grid(**self._getChildPadding(proxy.value))
+      for widget in self._baseContainerChildren.values():
+         widget.grid(**self._getChildPadding(widget))
       
       SmartWidget.grid(self, **kw)
+   
+   def reloadValue(self):
+      for widget in self._baseContainerNamedChildren.values():
+         widget.reloadValue()
    
    def _getChildPadding(self, smartWidget):
       result = dict()
@@ -71,7 +97,7 @@ class BaseContainer(SmartWidget):
       return result
    
    def _inflateChildren(self):
-      self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._smartWidgetValueBuffer)
+      self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._smartWidgetConfig, self._namePrefix)
    
    @staticmethod
    def _defaultStyle(style = None):

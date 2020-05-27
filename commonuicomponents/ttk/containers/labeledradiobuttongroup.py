@@ -1,12 +1,15 @@
 from .labeledcontainer import LabeledContainer
 
 class LabeledRadioButtonGroup(LabeledContainer):
-   def __init__(self, master = None, **kw):
+   def __init__(self, master, **kw):
       LabeledContainer._setVariable(kw, "IntVar")
       
       super().__init__(master, **kw)
       
       self._initValueAndTraceAdd()
+   
+   def getValueText(self):
+      return self.getSmartWidget((self.getValue(), 0))["text"]
    
    def _inflateChildren(self):
       for child in self._baseContainerChildren:
@@ -15,5 +18,5 @@ class LabeledRadioButtonGroup(LabeledContainer):
       
       LabeledContainer._inflateChildren(self)
       
-      for index, proxy in enumerate(self._baseContainerChildren.values()):
-         proxy.value.configure(value = index, variable = self.getRawValue())
+      for index, widget in enumerate(self._baseContainerChildren.values()):
+         widget.configure(value = index, variable = self.getRawValue())

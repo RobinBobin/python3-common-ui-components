@@ -1,7 +1,6 @@
 from copy import deepcopy
 from tkinter.ttk import Style
 from .multiplier import Multiplier
-from .smartwidgetproxy import SmartWidgetProxy
 from .widgets.smartwidget import SmartWidget
 from ..staticutils import StaticUtils
 
@@ -9,53 +8,14 @@ class CommonUIComponents:
    __CLASSES = dict()
    
    @staticmethod
-   def inflate(master, config, grid = True):
-      ui = CommonUIComponents._inflate(master, config["ui"], StaticUtils.getOrSetIfAbsent(config, "values", []))
+   def inflate(tab):
+      ui = CommonUIComponents._inflate(tab.baseTabFrame, [tab.baseTabConfig["ui"]], tab.baseTabConfig, [])
       
-      namedChildren = []
+      if len(ui) != 1:
+         raise ValueError("len(ui) != 1")
       
-      from .containers.basecontainer import BaseContainer
-      
-      def setNames(path, proxy):
-         isNamed = proxy.value.smartWidgetName != None
-         
-         if isNamed:
-            namedChildren.append(((*path, ), proxy))
-         
-         if isinstance(proxy.value, BaseContainer):
-            if isNamed:
-               path.append(proxy.value.smartWidgetName)
-            
-            for p in proxy.value._baseContainerChildren.values():
-               setNames(path, p)
-            
-            if isNamed:
-               path.pop()
-      
-      for proxy in ui.values():
-         if grid:
-            proxy.value.grid()
-         
-         setNames([], proxy)
-      
-      if CommonUIComponents.DEBUG:
-         print("Registered names: [")
-         
-         for path, proxy in namedChildren:
-            print(path, proxy.value.smartWidgetName, type(proxy.value))
-         
-         print("]")
-      
-      for path, proxy in namedChildren:
-         u = ui
-         
-         for p in path:
-            u = u[p]
-            
-            if type(u) == SmartWidgetProxy:
-               u = u.value._baseContainerChildren
-         
-         u[proxy.value.smartWidgetName] = proxy
+      for value in ui.values():
+         ui = value
       
       return ui
    
@@ -139,7 +99,7 @@ class CommonUIComponents:
       CommonUIComponents.registerClass(type(tkinterBase.__name__, (SmartWidget, tkinterBase), dict()))
    
    @staticmethod
-   def _inflate(master, children, parentBuffer):
+   def _inflate(master, children, config, namePrefix):
       result = dict()
       
       row = 0
@@ -147,8 +107,6 @@ class CommonUIComponents:
       
       logicalRow = 0
       logicalColumn = 0
-      
-      parentBufferIndex = 0
       
       for child in children:
          child = deepcopy(child)
@@ -161,7 +119,7 @@ class CommonUIComponents:
             
             multiply.setIndexableToChild(ch, "text", i)
             
-            grid = StaticUtils.getOrSetIfAbsent(ch, "grid", dict())
+            grid = StaticUtils.setIfAbsentAndGet(ch, "grid", dict())
             
             skipColumns = grid.pop("skipColumns", 0)
             column += skipColumns
@@ -170,17 +128,14 @@ class CommonUIComponents:
             grid["row"] = row
             grid["column"] = column
             
-            ch["parentBuffer"] = parentBuffer
-            ch["parentBufferIndex"] = parentBufferIndex
+            ch["config"] = config
+            ch["namePrefix"] = namePrefix
             
             multiply.setIndexableToChild(ch, "name", i)
             
             smartWidget = CommonUIComponents.__CLASSES[childType](master, **ch)
             
-            if smartWidget.hasValueBuffer:
-               parentBufferIndex += 1
-            
-            result[(logicalRow, logicalColumn)] = SmartWidgetProxy(smartWidget)
+            result[(logicalRow, logicalColumn)] = smartWidget
             
             if multiply.lastChildAddsRow and i == multiply.count - 1:
                grid["lastColumn"] = True

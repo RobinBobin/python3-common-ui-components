@@ -5,11 +5,26 @@ from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
 class SmartWidget:
    __FONT = None
    
-   def __init__(self, master = None, **kw):
+   def __init__(self, master, **kw):
+      self._namePrefix = kw.pop("namePrefix")
+      self._parentContainer = master
+      self._smartWidgetConfig = kw.pop("config")
       self._smartWidgetGrid = kw.pop("grid")
+      self._smartWidgetName = kw.pop("name", None)
       
       # Can be reset in children.
       self._smartWidgetStyle = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
+      
+      if hasattr(self._parentContainer, "_topLevelContainer"):
+         self._topLevelContainer = self._parentContainer._topLevelContainer
+      
+      if self._smartWidgetName:
+         result = self._topLevelContainer.getSmartWidget(*self._namePrefix)
+         
+         if isinstance(result, SmartWidget):
+            result = result._baseContainerNamedChildren
+         
+         result[self._smartWidgetName] = self
       
       for d in (self._smartWidgetGrid, self._smartWidgetStyle):
          for key, value in d.items():
@@ -23,14 +38,18 @@ class SmartWidget:
       
       self.__columns = kw.pop("columns", 1)
       self.__rows = kw.pop("rows", 1)
-      self.__smartWidgetName = kw.pop("name", None)
       self.__value = kw.pop("value", None)
       
-      parentBuffer = kw.pop("parentBuffer")
-      parentBufferIndex = kw.pop("parentBufferIndex")
+      if self.__value:
+         self.__defaultValue = self.__value.get()
       
-      if kw.pop("hasValueBuffer", False):
-         self._smartWidgetValueBuffer = StaticUtils.getOrSetIfAbsent(parentBuffer, parentBufferIndex, [])
+      self.__valueDomain = kw.pop("valueDomain", "")
+      
+      if isinstance(self.__valueDomain, str):
+         self.__valueDomain = self.__valueDomain.split(".")
+      
+      elif not isinstance(self.__valueDomain, list):
+         raise ValueError()
       
       if self.__class__._TKINTER_BASE:
          from tkinter.ttk import Widget
@@ -49,6 +68,10 @@ class SmartWidget:
    def grid(self, **kw):
       self.__class__._TKINTER_BASE.grid(self, **StaticUtils.mergeJson(kw, self._smartWidgetGrid, True))
    
+   def reloadValue(self):
+      if len(self.__valueDomain[0]):
+         self.__loadValue()
+   
    @property
    def column(self):
       return self._smartWidgetGrid["column"]
@@ -58,10 +81,6 @@ class SmartWidget:
       return self.__columns
    
    @property
-   def hasValueBuffer(self):
-      return hasattr(self, "_smartWidgetValueBuffer")
-   
-   @property
    def row(self):
       return self._smartWidgetGrid["row"]
    
@@ -69,14 +88,33 @@ class SmartWidget:
    def rows(self):
       return self.__rows
    
-   @property
-   def smartWidgetName(self):
-      return self.__smartWidgetName
+   def _getValueStorage(self):
+      if not self._smartWidgetName:
+         raise ValueError("Can't serialize nameless widgets")
+      
+      storage = self._smartWidgetConfig
+      
+      for key in ("values", *self.__valueDomain):
+         storage = StaticUtils.setIfAbsentAndGet(storage, key, dict())
+      
+      if len(self.__valueDomain[0]):
+         storage = StaticUtils.setIfAbsentAndGet(storage, self._topLevelContainer.getSmartWidget(*self.__valueDomain).getValue(), dict())
+      
+      for name in (*self._namePrefix, self._smartWidgetName):
+         storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
+      
+      return storage
    
    def _initValueAndTraceAdd(self):
-      self.__value.set(StaticUtils.getOrSetIfAbsent(self._smartWidgetValueBuffer, 0, self.__value.get()))
-         
-      self.__value.trace_add("write", lambda *_: StaticUtils.setSafely(self._smartWidgetValueBuffer, 0, self.__value.get()))
+      self.__loadValue()
+      
+      def _set(*_):
+         self._getValueStorage()[""] = self.__value.get()
+      
+      self.__value.trace_add("write", _set)
+   
+   def __loadValue(self):
+      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "", self.__defaultValue))
    
    @staticmethod
    def setFont(font):
@@ -88,7 +126,7 @@ class SmartWidget:
          kw["font"] = SmartWidget.__FONT
    
    @staticmethod
-   def _setVariable(kw, defaultTypeName, defaultValueKey = "value", setHasValueBuffer = True, variableKey = None):
+   def _setVariable(kw, defaultTypeName, defaultValueKey = "value", variableKey = None):
       value = eval(f"{kw.pop('valueType', defaultTypeName)}()")
       value.set(kw.get(defaultValueKey, value.get()))
       
@@ -96,6 +134,3 @@ class SmartWidget:
       
       if variableKey:
          kw[variableKey] = value
-      
-      if setHasValueBuffer:
-         kw["hasValueBuffer"] = True
