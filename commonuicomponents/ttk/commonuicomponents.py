@@ -76,6 +76,7 @@ class CommonUIComponents:
       from .containers.labeledcontainer import LabeledContainer
       from .containers.labeledradiobuttongroup import LabeledRadioButtonGroup
       from .widgets.checkbutton import Checkbutton
+      from .widgets.combobox import Combobox
       from .widgets.entry import Entry
       from .widgets.labeledscale import LabeledScale
       from .widgets.spinbox import Spinbox
@@ -86,6 +87,7 @@ class CommonUIComponents:
       
       for smartWidget in (
          Checkbutton,
+         Combobox,
          Container,
          Entry,
          LabeledContainer,
