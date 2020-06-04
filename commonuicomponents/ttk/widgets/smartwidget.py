@@ -43,13 +43,7 @@ class SmartWidget:
       if self.__value:
          self.__defaultValue = self.__value.get()
       
-      self.__valueDomain = kw.pop("valueDomain", "")
-      
-      if isinstance(self.__valueDomain, str):
-         self.__valueDomain = self.__valueDomain.split(".")
-      
-      elif not isinstance(self.__valueDomain, list):
-         raise ValueError()
+      self.__processValueDomains(kw)
       
       if self.__class__._TKINTER_BASE:
          from tkinter.ttk import Widget
@@ -69,7 +63,7 @@ class SmartWidget:
       self.__class__._TKINTER_BASE.grid(self, **StaticUtils.mergeJson(kw, self._smartWidgetGrid, True))
    
    def reloadValue(self):
-      if len(self.__valueDomain[0]):
+      if len(self.__valueDomains):
          self.__loadValue()
    
    @property
@@ -94,11 +88,12 @@ class SmartWidget:
       
       storage = self._smartWidgetConfig
       
-      for key in ("values", *self.__valueDomain):
-         storage = StaticUtils.setIfAbsentAndGet(storage, key, dict())
+      for keys in (("values", ""), *self.__valueDomains):
+         for k in keys:
+            storage = StaticUtils.setIfAbsentAndGet(storage, k, dict())
       
-      if len(self.__valueDomain[0]):
-         storage = StaticUtils.setIfAbsentAndGet(storage, self._topLevelContainer.getSmartWidget(*self.__valueDomain).getValue(), dict())
+      for domain in self.__valueDomains:
+         storage = StaticUtils.setIfAbsentAndGet(storage, self._topLevelContainer.getSmartWidget(*domain).getValue(), dict())
       
       for name in (*self._namePrefix, self._smartWidgetName):
          storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
@@ -115,6 +110,23 @@ class SmartWidget:
    
    def __loadValue(self):
       self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "", self.__defaultValue))
+   
+   def __processValueDomains(self, kw):
+      domainPresent = "valueDomain" in kw
+      domainsPresent = "valueDomains" in kw
+      present = (domainPresent, domainsPresent)
+      
+      if all(present):
+         raise ValueError(f"Only one of {present} can be present")
+      
+      self.__valueDomains = [kw.pop("valueDomain")] if domainPresent else kw.pop("valueDomains", [])
+      
+      for i in range(len(self.__valueDomains)):
+         if isinstance(self.__valueDomains[i], str) and len(self.__valueDomains[i]):
+            self.__valueDomains[i] = self.__valueDomains[i].split(".")
+         
+         elif not isinstance(self.__valueDomains[i], list):
+            raise ValueError()
    
    @staticmethod
    def setFont(font):
