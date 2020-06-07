@@ -21,21 +21,29 @@ class LabeledScale(SmartWidget):
       if self.__frame:
          master = self.__frame
       
-      # = Caption = #
-      self.__caption = Label(master, text = kw["text"])
-      
-      # = Value = #
+      # = Step = #
       self.__step = kw.get("step", 1)
       
-      from_, to = [v // self.__step for v in kw["range"]]
+      storage = self._getValueStorage()
       
-      value = StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "", from_ if value == None else value)
+      if "" in storage:
+         value = storage.pop("")
       
+      else:
+         for data in zip(range(2), ("from_", "to")):
+            kw["range"][data[0]] = StaticUtils.setIfAbsentAndGet(storage, data[1], kw["range"][data[0]])
+         
+         value = StaticUtils.setIfAbsentAndGet(storage, "value", kw["range"][0] // self.__step if value == None else value)
+      
+      # = Caption = #
+      self.__caption = Label(master, text = kw["text"])
       self.__value = Label(master, anchor = E)
       
       # = Scale = #
       self.getRawValue().trace_add("write", self.onChanged)
       self.getRawValue().set(value)
+      
+      from_, to = tuple(v // self.__step for v in kw["range"])
       
       self.__scale = Scale(
          master,
@@ -78,10 +86,11 @@ class LabeledScale(SmartWidget):
       
       self.__value["text"] = value * self.__step
       
-      self._getValueStorage()[""] = value
+      self._getValueStorage()["value"] = value
    
    def setFrom(self, from_):
       self.__scale["from"] = from_
+      self._getValueStorage()["from_"] = from_
       
       if self.getValue() < from_:
          self.getRawValue().set(from_)
@@ -90,6 +99,7 @@ class LabeledScale(SmartWidget):
    
    def setTo(self, to):
       self.__scale["to"] = to
+      self._getValueStorage()["to"] = to
       
       if self.getValue() > to:
          self.getRawValue().set(to)
