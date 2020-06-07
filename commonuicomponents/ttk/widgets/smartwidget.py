@@ -82,6 +82,10 @@ class SmartWidget:
    def rows(self):
       return self.__rows
    
+   @property
+   def smartWidgetName(self):
+      return self._smartWidgetName
+   
    def _getValueStorage(self):
       if not self._smartWidgetName:
          raise ValueError("Can't serialize nameless widgets")
