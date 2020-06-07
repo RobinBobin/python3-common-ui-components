@@ -77,3 +77,9 @@ class LabeledScale(SmartWidget):
       self.__value["text"] = value * self.__step
       
       self._getValueStorage()[""] = value
+   
+   def setFrom(self, from_):
+      self.__scale["from_"] = from_
+   
+   def setTo(self, to):
+      self.__scale["to"] = to
