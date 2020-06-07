@@ -31,7 +31,7 @@ class LabeledScale(SmartWidget):
       
       value = StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "", from_ if value == None else value)
       
-      self.__value = Label(master, anchor = E, width = max(StaticUtils.getPlaces([x * self.__step for x in (from_, to)])))
+      self.__value = Label(master, anchor = E)
       
       # = Scale = #
       self.getRawValue().trace_add("write", self.onChanged)
@@ -43,6 +43,8 @@ class LabeledScale(SmartWidget):
          length = 400,
          to = to,
          variable = self.getRawValue())
+      
+      self.__setValueWidth()
    
    def getValue(self):
       return super().getValue() * (self.__step if self.__multiplyValue else 1)
@@ -79,7 +81,20 @@ class LabeledScale(SmartWidget):
       self._getValueStorage()[""] = value
    
    def setFrom(self, from_):
-      self.__scale["from_"] = from_
+      self.__scale["from"] = from_
+      
+      if self.getValue() < from_:
+         self.getRawValue().set(from_)
+      
+      self.__setValueWidth()
    
    def setTo(self, to):
       self.__scale["to"] = to
+      
+      if self.getValue() > to:
+         self.getRawValue().set(to)
+      
+      self.__setValueWidth()
+   
+   def __setValueWidth(self):
+      self.__value["width"] = max(StaticUtils.getPlaces([x * self.__step for x in (self.__scale["from"], self.__scale["to"])]))
