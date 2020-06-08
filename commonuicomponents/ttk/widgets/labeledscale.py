@@ -26,6 +26,13 @@ class LabeledScale(SmartWidget):
       # = Step = #
       self.__step = kw.get("step", 1)
       
+      # = Caption = #
+      self.__caption = Label(master, text = kw["text"])
+      self.__value = Label(master, anchor = E)
+      
+      # = Scale = #
+      self.getRawValue().trace_add("write", self.onChanged)
+      
       storage = self._getValueStorage()
       
       if "" in storage:
@@ -36,13 +43,6 @@ class LabeledScale(SmartWidget):
             kw["range"][data[0]] = StaticUtils.setIfAbsentAndGet(storage, data[1], kw["range"][data[0]])
          
          self.getRawValue().set(StaticUtils.setIfAbsentAndGet(storage, "value", (kw["range"][0] if valueIsNone else self.getValue()) // self.__step))
-      
-      # = Caption = #
-      self.__caption = Label(master, text = kw["text"])
-      self.__value = Label(master, anchor = E)
-      
-      # = Scale = #
-      self.getRawValue().trace_add("write", self.onChanged)
       
       from_, to = tuple(v // self.__step for v in kw["range"])
       
