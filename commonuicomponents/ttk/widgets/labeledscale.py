@@ -39,8 +39,9 @@ class LabeledScale(SmartWidget):
          self.getRawValue().set(storage.pop(""))
       
       else:
-         for data in zip(range(2), ("from_", "to")):
-            kw["range"][data[0]] = StaticUtils.setIfAbsentAndGet(storage, data[1], kw["range"][data[0]])
+         for index, key in enumerate(("from_", "to")):
+            if key in storage:
+               kw["range"][index] = storage[key]
          
          self.getRawValue().set(StaticUtils.setIfAbsentAndGet(storage, "value", (kw["range"][0] if valueIsNone else self.getValue()) // self.__step))
       
