@@ -45,6 +45,9 @@ class SmartWidget:
       
       self.__processValueDomains(kw)
       
+      if not self.__value and len(self.__valueDomains):
+         raise ValueError(f"'valueDomain(s)' specified for '{self._smartWidgetName}', but there's no value to serialize")
+      
       if self.__class__._TKINTER_BASE:
          from tkinter.ttk import Widget
          
