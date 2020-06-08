@@ -57,22 +57,28 @@ class BaseTabLoader:
       
       notebook.bind("<<NotebookTabChanged>>", self._onTabChanged)
       
+      explicitAddition = wholeConfig.get("explicitAddition", False)
       selectedIndex = wholeConfig.get("selectedIndex", 0)
-      
-      tabs = dict()
       tabsDir = wholeConfig["tabsDir"]
       
-      for name, config in wholeConfig["tabs"].items():
-         module = import_module(f"{tabsDir}.{name}")
-         
-         tab = module.Tab(notebook, **baseTabKw)
-         tab._inflate(config)
-         
-         tabs[name] = tab
-         
-         notebook.add(tab, text = tab.baseTabCaption)
+      tabs = dict()
       
-      notebook.select(selectedIndex)
+      for name, config in wholeConfig["tabs"].items():
+         if not config.get("skip", explicitAddition):
+            module = import_module(f"{tabsDir}.{name}")
+            
+            tab = module.Tab(notebook, **baseTabKw)
+            tab._inflate(config)
+            
+            tabs[name] = tab
+            
+            notebook.add(tab, text = tab.baseTabCaption)
+      
+      if len(tabs):
+         if selectedIndex >= len(tabs):
+            selectedIndex = len(tabs) - 1
+         
+         notebook.select(selectedIndex)
       
       return tabs
    
