@@ -1,5 +1,5 @@
 from commonutils import StaticUtils
-from tkinter import E, IntVar, W
+from tkinter import E, W
 from tkinter.ttk import Frame, Label, Scale
 from .smartwidget import SmartWidget
 
@@ -8,11 +8,13 @@ class LabeledScale(SmartWidget):
       self.__multiplyValue = kw.pop("multiplyValue", False)
       
       twoRows = kw.pop("twoRows", False)
-      value = kw.pop("value", None)
       
       kw["columns"] = 1 if twoRows else 3
       kw["rows"] = 1
-      kw["value"] = IntVar()
+      
+      valueIsNone = "value" not in kw
+      
+      SmartWidget._setVariable(kw, "IntVar", valueKeyInStorage = "value")
       
       self.__frame = Frame(master) if twoRows else None
       
@@ -27,13 +29,13 @@ class LabeledScale(SmartWidget):
       storage = self._getValueStorage()
       
       if "" in storage:
-         value = storage.pop("")
+         self.getRawValue().set(storage.pop(""))
       
       else:
          for data in zip(range(2), ("from_", "to")):
             kw["range"][data[0]] = StaticUtils.setIfAbsentAndGet(storage, data[1], kw["range"][data[0]])
          
-         value = StaticUtils.setIfAbsentAndGet(storage, "value", kw["range"][0] // self.__step if value == None else value)
+         self.getRawValue().set(StaticUtils.setIfAbsentAndGet(storage, "value", (kw["range"][0] if valueIsNone else self.getValue()) // self.__step))
       
       # = Caption = #
       self.__caption = Label(master, text = kw["text"])
@@ -41,7 +43,6 @@ class LabeledScale(SmartWidget):
       
       # = Scale = #
       self.getRawValue().trace_add("write", self.onChanged)
-      self.getRawValue().set(value)
       
       from_, to = tuple(v // self.__step for v in kw["range"])
       
@@ -89,20 +90,21 @@ class LabeledScale(SmartWidget):
       self._getValueStorage()["value"] = value
    
    def setFrom(self, from_):
-      self.__scale["from"] = from_
+      self.__scale["from"] = from_ // self.__step
       self._getValueStorage()["from_"] = from_
+      self._defaultValue = self.__scale["from"]
       
-      if self.getValue() < from_:
-         self.getRawValue().set(from_)
+      if self.getValue() < self._defaultValue:
+         self.getRawValue().set(self._defaultValue)
       
       self.__setValueWidth()
    
    def setTo(self, to):
-      self.__scale["to"] = to
+      self.__scale["to"] = to // self._step
       self._getValueStorage()["to"] = to
       
-      if self.getValue() > to:
-         self.getRawValue().set(to)
+      if self.getValue() > self.__scale["to"]:
+         self.getRawValue().set(self.__scale["to"])
       
       self.__setValueWidth()
    

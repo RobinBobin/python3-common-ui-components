@@ -41,7 +41,8 @@ class SmartWidget:
       self.__value = kw.pop("value", None)
       
       if self.__value:
-         self.__defaultValue = self.__value.get()
+         self._defaultValue = self.__value.get()
+         self.__valueKeyInStorage = kw.pop("valueKeyInStorage")
       
       self.__processValueDomains(kw)
       
@@ -116,7 +117,7 @@ class SmartWidget:
       self.__value.trace_add("write", _set)
    
    def __loadValue(self):
-      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "", self.__defaultValue))
+      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), self.__valueKeyInStorage, self._defaultValue))
    
    def __processValueDomains(self, kw):
       domainPresent = "valueDomain" in kw
@@ -145,11 +146,12 @@ class SmartWidget:
          kw["font"] = SmartWidget.__FONT
    
    @staticmethod
-   def _setVariable(kw, defaultTypeName, defaultValueKey = "value", variableKey = None):
+   def _setVariable(kw, defaultTypeName, defaultValueKey = "value", valueKeyInStorage = "", variableKey = None):
       value = eval(f"{kw.pop('valueType', defaultTypeName)}()")
       value.set(kw.get(defaultValueKey, value.get()))
       
       kw["value"] = value
+      kw["valueKeyInStorage"] = valueKeyInStorage
       
       if variableKey:
          kw[variableKey] = value
