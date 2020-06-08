@@ -121,11 +121,9 @@ class SmartWidget:
    
    def __processValueDomains(self, kw):
       domainPresent = "valueDomain" in kw
-      domainsPresent = "valueDomains" in kw
-      present = (domainPresent, domainsPresent)
       
-      if all(present):
-         raise ValueError(f"Only one of {present} can be present")
+      if all((domainPresent, "valueDomains" in kw)):
+         raise ValueError(f"Only one of {('valueDomain', 'valueDomains')} can be present")
       
       self.__valueDomains = [kw.pop("valueDomain")] if domainPresent else kw.pop("valueDomains", [])
       
