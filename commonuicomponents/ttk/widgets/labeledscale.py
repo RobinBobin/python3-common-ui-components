@@ -100,7 +100,7 @@ class LabeledScale(SmartWidget):
       self.__setValueWidth()
    
    def setTo(self, to):
-      self.__scale["to"] = to // self._step
+      self.__scale["to"] = to // self.__step
       self._getValueStorage()["to"] = to
       
       if self.getValue() > self.__scale["to"]:
