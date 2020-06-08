@@ -66,6 +66,8 @@ class BaseContainer(SmartWidget):
       SmartWidget.grid(self, **kw)
    
    def reloadValue(self):
+      super().reloadValue()
+      
       for widget in self._baseContainerNamedChildren.values():
          widget.reloadValue()
    
