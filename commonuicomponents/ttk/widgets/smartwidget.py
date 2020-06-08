@@ -130,6 +130,9 @@ class SmartWidget:
       for i in range(len(self.__valueDomains)):
          if isinstance(self.__valueDomains[i], str) and len(self.__valueDomains[i]):
             self.__valueDomains[i] = self.__valueDomains[i].split(".")
+            
+            if not len(self.__valueDomains[i][0]):
+               self.__valueDomains[i][:1] = self._namePrefix
          
          elif not isinstance(self.__valueDomains[i], list):
             raise ValueError()
