@@ -101,7 +101,7 @@ class SmartWidget:
             storage = StaticUtils.setIfAbsentAndGet(storage, k, dict())
       
       for domain in self.__valueDomains:
-         storage = StaticUtils.setIfAbsentAndGet(storage, self._topLevelContainer.getSmartWidget(*domain).getValue(), dict())
+         storage = StaticUtils.setIfAbsentAndGet(storage, str(self._topLevelContainer.getSmartWidget(*domain).getValue()), dict())
       
       for name in (*self._namePrefix, self._smartWidgetName):
          storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
