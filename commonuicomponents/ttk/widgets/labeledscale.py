@@ -56,6 +56,9 @@ class LabeledScale(SmartWidget):
       
       self.__setValueWidth()
    
+   def bindScale(self, event, handler):
+      self.__scale.bind(event, handler)
+   
    def getValue(self):
       return super().getValue() * (self.__step if self.__multiplyValue else 1)
    
