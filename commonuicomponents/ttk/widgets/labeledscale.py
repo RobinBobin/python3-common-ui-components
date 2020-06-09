@@ -90,21 +90,21 @@ class LabeledScale(SmartWidget):
       
       self._getValueStorage()["value"] = value
    
-   def setFrom(self, from_):
+   def setFrom(self, from_, **args):
       self.__scale["from"] = from_ // self.__step
       self._getValueStorage()["from_"] = from_
       self._defaultValue = self.__scale["from"]
       
-      if self.getValue() < self._defaultValue:
+      if args.get("validate", True) and self.getValue() < self._defaultValue:
          self.getRawValue().set(self._defaultValue)
       
       self.__setValueWidth()
    
-   def setTo(self, to):
+   def setTo(self, to, **args):
       self.__scale["to"] = to // self.__step
       self._getValueStorage()["to"] = to
       
-      if self.getValue() > self.__scale["to"]:
+      if args.get("validate", True) and self.getValue() > self.__scale["to"]:
          self.getRawValue().set(self.__scale["to"])
       
       self.__setValueWidth()
