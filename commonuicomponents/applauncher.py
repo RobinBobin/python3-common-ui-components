@@ -56,14 +56,18 @@ class AppLauncher:
       self.__root.protocol("WM_DELETE_WINDOW", self._onDeleteWindow)
    
    def _createStyles(self):
+      font = Config["widgetFont"]
+      
       self.__root.style = Style()
-      self.__root.style.configure(".", font = Config["widgetFont"])
+      self.__root.style.configure(".", font = font)
       self.__root.style.configure("TButton", padding = [12, 7])
       self.__root.style.configure("TNotebook.Tab", padding = [13, 7])
       self.__root.style.configure("Horizontal.TScale", sliderthickness = 25)
       self.__root.style.configure("Horizontal.TScrollbar", arrowsize = 25)
       self.__root.style.configure("Vertical.TScrollbar", arrowsize = 25)
       self.__root.style.configure("TSpinbox", arrowsize = 30)
+      
+      self.__root.option_add('*TCombobox*Listbox.font', font)
       
       colors = {
          "Cyan": "cyan",

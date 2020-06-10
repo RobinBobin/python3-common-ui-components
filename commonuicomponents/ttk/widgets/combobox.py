@@ -12,9 +12,6 @@ class Combobox(SmartWidget, TtkCombobox):
       
       SmartWidget.__init__(self, master, **kw)
       
-      popdown = self.tk.eval(f"ttk::combobox::PopdownWindow {self}")
-      self.tk.call(f"{popdown}.f.l", "configure", "-font", self["font"])
-      
       self._initValueAndTraceAdd()
    
    def getValueIndex(self):

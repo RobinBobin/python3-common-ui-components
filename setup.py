@@ -1,9 +1,10 @@
-import setuptools
+from setuptools import setup
+from commonuicomponents import __version__
 
 with open("README.md", "r") as fh:
    long_description = fh.read()
 
-setuptools.setup(
+setup(
    author="Ruben Shalimov",
    author_email="r_shalimov@inbox.ru",
    classifiers=[
@@ -19,5 +20,5 @@ setuptools.setup(
    name="common-ui-components",
    packages=setuptools.find_packages(),
    url="https://github.com/RobinBobin/python3-common-ui-components",
-   version="1.6.6"
+   version=__version__
 )
