@@ -1,3 +1,4 @@
+from commonutils import StaticUtils
 from importlib import import_module
 from tkinter.ttk import Frame
 from .ttk import CommonUIComponents
@@ -21,6 +22,10 @@ class BaseTab(Frame):
    def baseTabFrame(self):
       return self.__frame
    
+   @property
+   def baseTabStorage(self):
+      return self.__storage
+   
    def dumpNamedChildren(self):
       from .ttk.containers.basecontainer import BaseContainer
       
@@ -41,8 +46,9 @@ class BaseTab(Frame):
    def onDeleteWindow(self):
       pass
    
-   def _inflate(self, config):
+   def _inflate(self, config, storage):
       self.__config = config
+      self.__storage = storage
       
       if "ui" in config:
          self.__ui = CommonUIComponents.inflate(self)
@@ -51,14 +57,14 @@ class BaseTab(Frame):
 
 
 class BaseTabLoader:
-   def load(self, notebook, wholeConfig, **baseTabKw):
+   def load(self, notebook, wholeConfig, wholeStorage, **baseTabKw):
       self.__notebook = notebook
-      self.__wholeConfig = wholeConfig
+      self.__wholeStorage = wholeStorage
       
       notebook.bind("<<NotebookTabChanged>>", self._onTabChanged)
       
       explicitAddition = wholeConfig.get("explicitAddition", False)
-      selectedIndex = wholeConfig.get("selectedIndex", 0)
+      selectedIndex = wholeStorage.get("selectedIndex", 0)
       tabsDir = wholeConfig["tabsDir"]
       
       tabs = dict()
@@ -68,7 +74,7 @@ class BaseTabLoader:
             module = import_module(f"{tabsDir}.{name}")
             
             tab = module.Tab(notebook, **baseTabKw)
-            tab._inflate(config)
+            tab._inflate(config, StaticUtils.setIfAbsentAndGet(wholeStorage, name, dict()))
             
             tabs[name] = tab
             
@@ -83,4 +89,4 @@ class BaseTabLoader:
       return tabs
    
    def _onTabChanged(self, event):
-      self.__wholeConfig["selectedIndex"] = self.__notebook.index(self.__notebook.select())
+      self.__wholeStorage["selectedIndex"] = self.__notebook.index(self.__notebook.select())

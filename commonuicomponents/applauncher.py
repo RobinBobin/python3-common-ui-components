@@ -2,7 +2,7 @@ from os import sys, path
 from tkinter import Tk
 from tkinter.ttk import Notebook, Style
 from .basetab import BaseTabLoader
-from .config import Config
+from .json import Config, Storage
 from .ttk import CommonUIComponents, SmartWidget
 
 def _maximizeUnderWindows(event):
@@ -19,6 +19,7 @@ class AppLauncher:
    def __init__(self):
       self.__root = Tk()
       
+      self.__configurationFiles = {"config": Config, "storage": Storage}
       self.__notebook = Notebook()
       self.__notebook.bind("<Map>", _maximizeUnderWindows)
    
@@ -27,7 +28,7 @@ class AppLauncher:
       return self.__root
    
    def run(self, entry, baseTabLoader = BaseTabLoader()):
-      self._loadConfig()
+      self._loadConfigurationFiles()
       self._createStyles()
       self._configureRoot()
       
@@ -36,7 +37,7 @@ class AppLauncher:
       
       sys.path.append(path.dirname(path.dirname(path.abspath(entry))))
       
-      baseTabLoader.load(self.__notebook, Config)
+      baseTabLoader.load(self.__notebook, Config.INSTANCE.json, Storage.INSTANCE.json)
       
       self.__notebook.place(relwidth = 1, relheight = 1)
       
@@ -88,13 +89,21 @@ class AppLauncher:
    def _getCommonUIComponentsInitParams(self):
       return dict()
    
-   def _loadConfig(self):
-      return Config.load()
+   def _loadConfigurationFiles(self):
+      result = dict()
+      
+      for name in self.__configurationFiles:
+         self.__configurationFiles[name] = self.__configurationFiles[name]()
+         
+         result[name] = self.__configurationFiles[name].load()
+      
+      return result
    
    def _onDeleteWindow(self):
       for name in self.__notebook.tabs():
          self.__notebook.nametowidget(name).onDeleteWindow()
       
-      Config.dump()
+      for config in self.__configurationFiles.values():
+         config.INSTANCE.dump()
       
       self.__root.destroy()

@@ -99,7 +99,7 @@ class BaseContainer(SmartWidget):
       return result
    
    def _inflateChildren(self):
-      self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._smartWidgetConfig, self._namePrefix)
+      self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._smartWidgetStorage, self._namePrefix)
    
    @staticmethod
    def _defaultStyle(style = None):

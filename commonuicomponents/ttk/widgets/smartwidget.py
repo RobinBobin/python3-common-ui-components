@@ -8,7 +8,7 @@ class SmartWidget:
    def __init__(self, master, **kw):
       self._namePrefix = kw.pop("namePrefix")
       self._parentContainer = master
-      self._smartWidgetConfig = kw.pop("config")
+      self._smartWidgetStorage = kw.pop("storage")
       self._smartWidgetGrid = kw.pop("grid")
       self._smartWidgetName = kw.pop("name", None)
       
@@ -94,7 +94,7 @@ class SmartWidget:
       if not self._smartWidgetName:
          raise ValueError("Can't serialize nameless widgets")
       
-      storage = self._smartWidgetConfig
+      storage = self._smartWidgetStorage
       
       for keys in (("values", ""), *self.__valueDomains):
          for k in keys:

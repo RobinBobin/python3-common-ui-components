@@ -9,7 +9,7 @@ class CommonUIComponents:
    
    @staticmethod
    def inflate(tab):
-      ui = CommonUIComponents._inflate(tab.baseTabFrame, [tab.baseTabConfig["ui"]], tab.baseTabConfig, [])
+      ui = CommonUIComponents._inflate(tab.baseTabFrame, [tab.baseTabConfig["ui"]], tab.baseTabStorage, [])
       
       if len(ui) != 1:
          raise ValueError("len(ui) != 1")
@@ -99,7 +99,7 @@ class CommonUIComponents:
       CommonUIComponents.registerClass(type(tkinterBase.__name__, (SmartWidget, tkinterBase), dict()))
    
    @staticmethod
-   def _inflate(master, children, config, namePrefix):
+   def _inflate(master, children, storage, namePrefix):
       result = dict()
       
       row = 0
@@ -128,7 +128,7 @@ class CommonUIComponents:
             grid["row"] = row
             grid["column"] = column
             
-            ch["config"] = config
+            ch["storage"] = storage
             ch["namePrefix"] = namePrefix
             
             multiply.setIndexableToChild(ch, "name", i)
