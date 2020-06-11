@@ -3,4 +3,4 @@ from .basetab import BaseTab, BaseTabLoader
 from .config import Config
 from .staticutils import StaticUtils
 
-__version__ = "1.6.7"
+__version__ = "1.6.8"

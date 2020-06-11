@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 from commonuicomponents import __version__
 
 with open("README.md", "r") as fh:
@@ -18,7 +18,7 @@ setup(
    long_description=long_description,
    long_description_content_type="text/markdown",
    name="common-ui-components",
-   packages=setuptools.find_packages(),
+   packages=find_packages(),
    url="https://github.com/RobinBobin/python3-common-ui-components",
    version=__version__
 )
