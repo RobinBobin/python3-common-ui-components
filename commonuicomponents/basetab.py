@@ -27,6 +27,7 @@ class BaseTab(Frame):
       return self.__storage
    
    def dumpNamedChildren(self):
+      # pylint: disable = import-outside-toplevel
       from .ttk.containers.basecontainer import BaseContainer
       
       def dump(container):
@@ -74,13 +75,14 @@ class BaseTabLoader:
             module = import_module(f"{tabsDir}.{name}")
             
             tab = module.Tab(notebook, **baseTabKw)
+            # pylint: disable = protected-access
             tab._inflate(config, StaticUtils.setIfAbsentAndGet(wholeStorage, name, dict()))
             
             tabs[name] = tab
             
             notebook.add(tab, text = tab.baseTabCaption)
       
-      if len(tabs):
+      if tabs:
          if selectedIndex >= len(tabs):
             selectedIndex = len(tabs) - 1
          
@@ -88,5 +90,5 @@ class BaseTabLoader:
       
       return tabs
    
-   def _onTabChanged(self, event):
+   def _onTabChanged(self, _):
       self.__wholeStorage["selectedIndex"] = self.__notebook.index(self.__notebook.select())

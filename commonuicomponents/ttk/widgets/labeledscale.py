@@ -28,7 +28,7 @@ class LabeledScale(SmartWidget):
       
       # = Caption = #
       self.__caption = Label(master, text = kw["text"])
-      self.__value = Label(master, anchor = E)
+      self.__valueLabel = Label(master, anchor = E)
       
       # = Scale = #
       self.getRawValue().trace_add("write", self.onChanged)
@@ -70,7 +70,7 @@ class LabeledScale(SmartWidget):
          self.__frame.grid(sticky = W + E, **kw)
          
          self.__caption.grid(column = 0, row = 0, sticky = W)
-         self.__value.grid(column = 1, padx = (20, 0), row = 0, sticky = E)
+         self.__valueLabel.grid(column = 1, padx = (20, 0), row = 0, sticky = E)
          self.__scale.grid(column = 0, columnspan = 2, pady = (20, 0), row = 1, sticky = W + E)
       
       else:
@@ -80,7 +80,7 @@ class LabeledScale(SmartWidget):
          
          kw["column"] += 1
          kw["padx"] = [20, 0]
-         self.__value.grid(sticky = W + E, **kw)
+         self.__valueLabel.grid(sticky = W + E, **kw)
          
          kw["column"] += 1
          kw["padx"][1] = padxRight
@@ -89,7 +89,7 @@ class LabeledScale(SmartWidget):
    def onChanged(self, *_):
       value = self.getRawValue().get()
       
-      self.__value["text"] = value * self.__step
+      self.__valueLabel["text"] = value * self.__step
       
       self._getValueStorage()["value"] = value
    
@@ -113,4 +113,4 @@ class LabeledScale(SmartWidget):
       self.__setValueWidth()
    
    def __setValueWidth(self):
-      self.__value["width"] = max(StaticUtils.getPlaces([x * self.__step for x in (self.__scale["from"], self.__scale["to"])]))
+      self.__valueLabel["width"] = max(StaticUtils.getPlaces([x * self.__step for x in (self.__scale["from"], self.__scale["to"])]))

@@ -9,7 +9,7 @@ class Config(Json):
    def load(self):
       result = super().load()
       
-      if result == None:
+      if result is None:
          raise ValueError("Config not loaded")
       
       StaticUtils.TITLE = Config["title"]
@@ -21,7 +21,7 @@ class Config(Json):
          if StaticUtils.isWindows():
             widgetFont = self.json.get("widgetFont", "")
             
-            if type(widgetFont) != str and len(widgetFont) > 1:
+            if not isinstance(widgetFont, str) and len(widgetFont) > 1:
                widgetFont[1] = StaticUtils.round(widgetFont[1] / 1.2)
       
       return result

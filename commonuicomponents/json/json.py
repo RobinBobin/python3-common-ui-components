@@ -2,11 +2,11 @@ from json import dump, load
 from ..staticutils import StaticUtils
 
 class JsonMeta(type):
-   def __getitem__(self, key):
-      return self.INSTANCE.json[key]
+   def __getitem__(cls, key):
+      return cls.INSTANCE.json[key]
    
-   def __setitem__(self, key, value):
-      self.INSTANCE.json[key] = value
+   def __setitem__(cls, key, value):
+      cls.INSTANCE.json[key] = value
 
 
 class Result:
@@ -36,7 +36,8 @@ class Json(metaclass = JsonMeta):
          with open(self.__paths[0], "w", encoding = "utf-8") as f:
             dump(self.__json, f, ensure_ascii = False, indent = 3)
       
-      except Exception as e:
+      # pylint: disable = broad-except
+      except BaseException as e:
          StaticUtils.showerror(e)
    
    def load(self):
@@ -49,4 +50,4 @@ class Json(metaclass = JsonMeta):
             pass
          
          else:
-            return Result(not not created)
+            return Result(bool(created))

@@ -5,8 +5,9 @@ from .basetab import BaseTabLoader
 from .json import Config, Storage
 from .ttk import CommonUIComponents, SmartWidget
 
-def _maximizeUnderWindows(event):
+def _maximizeUnderWindows(_):
    try:
+      # pylint: disable = import-outside-toplevel
       from ctypes import WinDLL
       
       user32 = WinDLL("user32")
@@ -86,6 +87,7 @@ class AppLauncher:
          for color in colors.items():
             self.__root.style.configure(f"{color[0]}.T{style[0]}Container.TBaseContainer.T{style[1]}", background = color[1])
    
+   # pylint: disable = no-self-use
    def _getCommonUIComponentsInitParams(self):
       return dict()
    

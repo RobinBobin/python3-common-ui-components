@@ -17,7 +17,7 @@ class Multiplier:
    def setIndexableToChild(self, child, key, index):
       indexable = self.__indexables[key]
       
-      if indexable != None:
+      if indexable is not None:
          child[key] = indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else "{0}{1}".format(indexable, index + 1 + self.__multiply.get(f"offsetOfIndexIn{key.title()}", Multiplier.__DEFAULT_OFFSETS.get(key, 0)))
    
    @property

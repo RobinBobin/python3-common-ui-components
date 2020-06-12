@@ -1,6 +1,8 @@
 from commonutils import StaticUtils
 from numbers import Number
+# pylint: disable = unused-import
 from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
+from tkinter.ttk import Widget
 
 class SmartWidget:
    __FONT = None
@@ -12,7 +14,7 @@ class SmartWidget:
       self._smartWidgetGrid = kw.pop("grid")
       self._smartWidgetName = kw.pop("name", None)
       
-      # Can be reset in children.
+      # Can be reset in children. pylint: disable = no-member
       self._smartWidgetStyle = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
       if hasattr(self._parentContainer, "_topLevelContainer"):
@@ -46,12 +48,10 @@ class SmartWidget:
       
       self.__processValueDomains(kw)
       
-      if not self.__value and len(self.__valueDomains):
+      if not self.__value and self.__valueDomains:
          raise ValueError(f"'valueDomain(s)' specified for '{self._smartWidgetName}', but there's no value to serialize")
       
       if self.__class__._TKINTER_BASE:
-         from tkinter.ttk import Widget
-         
          if issubclass(self.__class__._TKINTER_BASE, Widget) and "style" not in kw:
             kw["style"] = self.__class__.STYLE
          
@@ -64,10 +64,11 @@ class SmartWidget:
       return self.__value.get()
    
    def grid(self, **kw):
+      # pylint: disable = no-member, protected-access
       self.__class__._TKINTER_BASE.grid(self, **StaticUtils.mergeJson(kw, self._smartWidgetGrid, True))
    
    def reloadValue(self):
-      if len(self.__valueDomains):
+      if self.__valueDomains:
          self.__loadValue()
    
    @property
@@ -128,10 +129,10 @@ class SmartWidget:
       self.__valueDomains = [kw.pop("valueDomain")] if domainPresent else kw.pop("valueDomains", [])
       
       for i in range(len(self.__valueDomains)):
-         if isinstance(self.__valueDomains[i], str) and len(self.__valueDomains[i]):
+         if isinstance(self.__valueDomains[i], str) and self.__valueDomains[i]:
             self.__valueDomains[i] = self.__valueDomains[i].split(".")
             
-            if not len(self.__valueDomains[i][0]):
+            if not self.__valueDomains[i][0]:
                self.__valueDomains[i][:1] = self._namePrefix
          
          elif not isinstance(self.__valueDomains[i], list):
@@ -148,6 +149,7 @@ class SmartWidget:
    
    @staticmethod
    def _setVariable(kw, defaultTypeName, defaultValueKey = "value", valueKeyInStorage = "", variableKey = None):
+      # pylint: disable = eval-used
       value = eval(f"{kw.pop('valueType', defaultTypeName)}()")
       value.set(kw.get(defaultValueKey, value.get()))
       
