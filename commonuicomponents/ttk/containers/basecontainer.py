@@ -55,7 +55,6 @@ class BaseContainer(SmartWidget):
          result = self
          
          for key in keys:
-            # pylint: disable = protected-access
             result = (result._baseContainerNamedChildren if isinstance(key, str) else result._baseContainerChildren)[key]
       
       return result
@@ -72,7 +71,6 @@ class BaseContainer(SmartWidget):
       for widget in self._baseContainerNamedChildren.values():
          widget.reloadValue()
    
-   # pylint: disable = protected-access
    def _getChildPadding(self, smartWidget):
       result = dict()
       
@@ -101,7 +99,6 @@ class BaseContainer(SmartWidget):
       return result
    
    def _inflateChildren(self):
-      # pylint: disable = protected-access
       self._baseContainerChildren = CommonUIComponents._inflate(self, self._baseContainerChildren, self._smartWidgetStorage, self._namePrefix)
    
    @staticmethod

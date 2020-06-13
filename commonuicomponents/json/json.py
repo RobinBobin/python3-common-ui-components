@@ -36,7 +36,6 @@ class Json(metaclass = JsonMeta):
          with open(self.__paths[0], "w", encoding = "utf-8") as f:
             dump(self.__json, f, ensure_ascii = False, indent = 3)
       
-      # pylint: disable = broad-except
       except BaseException as e:
          StaticUtils.showerror(e)
    

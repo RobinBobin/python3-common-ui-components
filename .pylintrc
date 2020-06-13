@@ -62,17 +62,11 @@ confidence=
 # --disable=W".
 disable=fixme,
         super-init-not-called,
+        bad-continuation,
         attribute-defined-outside-init,
         wrong-import-order,
-        missing-class-docstring,
-        missing-module-docstring,
-        missing-function-docstring,
-        line-too-long,
-        invalid-name,
-        bad-indentation,
         bad-whitespace,
-        trailing-whitespace,
-        bad-continuation,
+        missing-module-docstring,
         print-statement,
         parameter-unpacking,
         unpacking-in-except,
@@ -239,7 +233,11 @@ ignore-on-opaque-inference=yes
 # List of class names for which member attributes should not be checked (useful
 # for classes with dynamically set attributes). This supports the use of
 # qualified names.
-ignored-classes=optparse.Values,thread._local,_thread._local
+ignored-classes=optparse.Values,
+                thread._local,
+                _thread._local,
+                commonuicomponents.ttk.commonuicomponents.CommonUIComponents,
+                commonuicomponents.ttk.widgets.smartwidget.SmartWidget
 
 # List of module names for which member attributes should not be checked
 # (useful for modules/projects where namespaces are manipulated during runtime
@@ -276,10 +274,10 @@ indent-after-paren=4
 
 # String used as indentation unit. This is usually "    " (4 spaces) or "\t" (1
 # tab).
-indent-string='    '
+indent-string='   '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=264
 
 # Maximum number of lines in a module.
 max-module-lines=1000
@@ -288,8 +286,7 @@ max-module-lines=1000
 # separator` is used to allow tabulation in dicts, etc.: {1  : 1,\n222: 2}.
 # `trailing-comma` allows a space between comma and closing bracket: (a, ).
 # `empty-line` allows space-only lines.
-no-space-check=trailing-comma,
-               dict-separator
+no-space-check=empty-line
 
 # Allow the body of a class to be on the same line as the declaration if body
 # contains single statement.
@@ -318,14 +315,14 @@ min-similarity-lines=4
 [BASIC]
 
 # Naming style matching correct argument names.
-argument-naming-style=snake_case
+argument-naming-style=camelCase
 
 # Regular expression matching correct argument names. Overrides argument-
 # naming-style.
 #argument-rgx=
 
 # Naming style matching correct attribute names.
-attr-naming-style=snake_case
+attr-naming-style=camelCase
 
 # Regular expression matching correct attribute names. Overrides attr-naming-
 # style.
@@ -344,7 +341,7 @@ bad-names=foo,
 bad-names-rgxs=
 
 # Naming style matching correct class attribute names.
-class-attribute-naming-style=any
+class-attribute-naming-style=camelCase
 
 # Regular expression matching correct class attribute names. Overrides class-
 # attribute-naming-style.
@@ -369,23 +366,19 @@ const-naming-style=UPPER_CASE
 docstring-min-length=-1
 
 # Naming style matching correct function names.
-function-naming-style=snake_case
+function-naming-style=camelCase
 
 # Regular expression matching correct function names. Overrides function-
 # naming-style.
 #function-rgx=
 
 # Good variable names which should always be accepted, separated by a comma.
-good-names=i,
-           j,
-           k,
-           ex,
-           Run,
-           _
+good-names=
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted
-good-names-rgxs=
+good-names-rgxs=__.*,
+                [a-z0-9]*
 
 # Include a hint for the correct naming format with invalid-name.
 include-naming-hint=no
@@ -398,7 +391,7 @@ inlinevar-naming-style=any
 #inlinevar-rgx=
 
 # Naming style matching correct method names.
-method-naming-style=snake_case
+method-naming-style=camelCase
 
 # Regular expression matching correct method names. Overrides method-naming-
 # style.
@@ -417,7 +410,7 @@ name-group=
 
 # Regular expression which should only match function or class names that do
 # not require a docstring.
-no-docstring-rgx=^_
+no-docstring-rgx=.*
 
 # List of decorators that produce properties, such as abc.abstractproperty. Add
 # to this list to register other decorators that produce valid properties.
@@ -425,7 +418,7 @@ no-docstring-rgx=^_
 property-classes=abc.abstractproperty
 
 # Naming style matching correct variable names.
-variable-naming-style=snake_case
+variable-naming-style=camelCase
 
 # Regular expression matching correct variable names. Overrides variable-
 # naming-style.
@@ -518,7 +511,15 @@ exclude-protected=_asdict,
                   _fields,
                   _replace,
                   _source,
-                  _make
+                  _make,
+                  _inflate,
+                  _smartWidgetGrid,
+                  _smartWidgetStyle,
+                  _baseContainerChildren,
+                  _baseContainerNamedChildren,
+                  _TKINTER_BASE,
+                  _DEFAULT_STYLE,
+                  _STYLE_INSTANCE
 
 # List of valid names for the first argument in a class method.
 valid-classmethod-first-arg=cls
@@ -604,5 +605,4 @@ min-public-methods=1
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "BaseException, Exception".
-overgeneral-exceptions=BaseException,
-                       Exception
+overgeneral-exceptions=Exception

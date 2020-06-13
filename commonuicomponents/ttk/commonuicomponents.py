@@ -29,7 +29,7 @@ class CommonUIComponents:
       for key, value in params.items():
          setattr(CommonUIComponents, key.upper(), value)
       
-      # pylint: disable = import-outside-toplevel, protected-access
+      # pylint: disable = import-outside-toplevel
       SmartWidget._STYLE_INSTANCE = Style()
       
       from tkinter import Canvas
@@ -60,7 +60,6 @@ class CommonUIComponents:
       ):
          CommonUIComponents.registerClass(smartWidget)
    
-   # pylint: disable = protected-access
    @staticmethod
    def registerClass(clazz):
       if not issubclass(clazz, SmartWidget):
@@ -92,7 +91,6 @@ class CommonUIComponents:
       
       CommonUIComponents.__CLASSES[clazz.__name__] = clazz
       
-      # pylint: disable = no-member
       if CommonUIComponents.DEBUG:
          print(f"registered {clazz} (TKINTER_BASE: {clazz._TKINTER_BASE}, STYLE: '{clazz.STYLE}'.")
    

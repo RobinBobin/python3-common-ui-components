@@ -2,6 +2,7 @@ from commonutils import StaticUtils
 from numbers import Number
 # pylint: disable = unused-import
 from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
+# pylint: enable = unused-import
 from tkinter.ttk import Widget
 
 class SmartWidget:
@@ -14,7 +15,7 @@ class SmartWidget:
       self._smartWidgetGrid = kw.pop("grid")
       self._smartWidgetName = kw.pop("name", None)
       
-      # Can be reset in children. pylint: disable = no-member
+      # Can be reset in children.
       self._smartWidgetStyle = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
       
       if hasattr(self._parentContainer, "_topLevelContainer"):
@@ -64,7 +65,6 @@ class SmartWidget:
       return self.__value.get()
    
    def grid(self, **kw):
-      # pylint: disable = no-member, protected-access
       self.__class__._TKINTER_BASE.grid(self, **StaticUtils.mergeJson(kw, self._smartWidgetGrid, True))
    
    def reloadValue(self):

@@ -75,7 +75,6 @@ class BaseTabLoader:
             module = import_module(f"{tabsDir}.{name}")
             
             tab = module.Tab(notebook, **baseTabKw)
-            # pylint: disable = protected-access
             tab._inflate(config, StaticUtils.setIfAbsentAndGet(wholeStorage, name, dict()))
             
             tabs[name] = tab
