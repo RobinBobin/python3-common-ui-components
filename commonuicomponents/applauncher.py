@@ -33,15 +33,17 @@ class AppLauncher:
       self._createStyles()
       self._configureRoot()
       
+      # pylint: disable = import-outside-toplevel
+      from . import __version__
+      from .versions.storage import BaseStorage
+      
+      BaseStorage.init()
       CommonUIComponents.init(**self._getCommonUIComponentsInitParams())
-      SmartWidget.setFont(Config["widgetFont"])
+      SmartWidget.init()
       
       sys.path.append(path.dirname(path.dirname(path.abspath(entry))))
       
       baseTabLoader.load(self.__notebook, Config.INSTANCE.json, Storage.INSTANCE.json)
-      
-      # pylint: disable = import-outside-toplevel
-      from . import __version__
       
       Config["version"] = __version__
       

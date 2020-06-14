@@ -45,7 +45,6 @@ class SmartWidget:
       
       if self.__value:
          self._defaultValue = self.__value.get()
-         self.__valueKeyInStorage = kw.pop("valueKeyInStorage")
       
       self.__processValueDomains(kw)
       
@@ -118,7 +117,7 @@ class SmartWidget:
       self.__value.trace_add("write", _set)
    
    def __loadValue(self):
-      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), self.__valueKeyInStorage, self._defaultValue))
+      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "value", self._defaultValue))
    
    def __processValueDomains(self, kw):
       domainPresent = "valueDomain" in kw
@@ -139,8 +138,13 @@ class SmartWidget:
             raise ValueError()
    
    @staticmethod
-   def setFont(font):
-      SmartWidget.__FONT = font
+   def init():
+      # pylint: disable = import-outside-toplevel
+      from ...json import Config
+      from ...versions.storage import BaseStorage
+      
+      SmartWidget.__FONT = Config["widgetFont"]
+      SmartWidget.__STORAGE = BaseStorage.get(Config["version"])
    
    @staticmethod
    def _setFont(kw):
@@ -148,13 +152,12 @@ class SmartWidget:
          kw["font"] = SmartWidget.__FONT
    
    @staticmethod
-   def _setVariable(kw, defaultTypeName, defaultValueKey = "value", valueKeyInStorage = "", variableKey = None):
+   def _setVariable(kw, defaultTypeName, defaultValueKey = "value", variableKey = None):
       # pylint: disable = eval-used
       value = eval(f"{kw.pop('valueType', defaultTypeName)}()")
       value.set(kw.get(defaultValueKey, value.get()))
       
       kw["value"] = value
-      kw["valueKeyInStorage"] = valueKeyInStorage
       
       if variableKey:
          kw[variableKey] = value

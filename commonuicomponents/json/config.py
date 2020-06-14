@@ -2,21 +2,6 @@ from pathlib import Path
 from .json import Json
 from ..staticutils import StaticUtils
 
-class Version:
-   def __init__(self, version):
-      self.__version = tuple(int(x) for x in version.split("."))
-      
-      if len(self.__version) != 3:
-         raise ValueError()
-   
-   def __eq__(self, other):
-      return self.__version == other.version
-   
-   @property
-   def version(self):
-      return self.__version
-
-
 class Config(Json):
    def __init__(self):
       super().__init__(("config.json", "default_config.json", Path("..", "default_config.json")))

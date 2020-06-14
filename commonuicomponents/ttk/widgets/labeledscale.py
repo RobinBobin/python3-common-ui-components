@@ -14,7 +14,7 @@ class LabeledScale(SmartWidget):
       
       valueIsNone = "value" not in kw
       
-      SmartWidget._setVariable(kw, "IntVar", valueKeyInStorage = "value")
+      SmartWidget._setVariable(kw, "IntVar")
       
       self.__frame = Frame(master) if twoRows else None
       
