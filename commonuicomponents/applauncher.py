@@ -40,6 +40,11 @@ class AppLauncher:
       
       baseTabLoader.load(self.__notebook, Config.INSTANCE.json, Storage.INSTANCE.json)
       
+      # pylint: disable = import-outside-toplevel
+      from . import __version__
+      
+      Config["version"] = __version__
+      
       self.__notebook.place(relwidth = 1, relheight = 1)
       
       self.__root.mainloop()

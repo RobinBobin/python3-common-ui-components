@@ -13,7 +13,8 @@ class Result:
    def __init__(self, created):
       self.__created = created
    
-   def __bool__(self):
+   @property
+   def created(self):
       return self.__created
 
 
