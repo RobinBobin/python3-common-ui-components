@@ -1,6 +1,6 @@
 from .applauncher import AppLauncher
-from .basetab import BaseTab, BaseTabLoader
+from .basetab import BaseTab
+from .basetabloader import BaseTabLoader
 from .json import Config, Storage
 from .staticutils import StaticUtils
-
-__version__ = "2.0.0"
+from .version import __version__

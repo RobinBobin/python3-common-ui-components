@@ -1,9 +1,11 @@
 from os import sys, path
 from tkinter import Tk
 from tkinter.ttk import Notebook, Style
-from .basetab import BaseTabLoader
+from .basetabloader import BaseTabLoader
 from .json import Config, Storage
 from .ttk import CommonUIComponents, SmartWidget
+from .version import __version__
+from .versions.storage import BaseStorage
 
 def _maximizeUnderWindows(_):
    try:
@@ -20,7 +22,7 @@ class AppLauncher:
    def __init__(self):
       self.__root = Tk()
       
-      self.__configurationFiles = {"config": Config, "storage": Storage}
+      self.__configurationFiles = [Config(), Storage()]
       self.__notebook = Notebook()
       self.__notebook.bind("<Map>", _maximizeUnderWindows)
    
@@ -33,19 +35,20 @@ class AppLauncher:
       self._createStyles()
       self._configureRoot()
       
-      # pylint: disable = import-outside-toplevel
-      from . import __version__
-      from .versions.storage import BaseStorage
-      
       BaseStorage.init()
       CommonUIComponents.init(**self._getCommonUIComponentsInitParams())
-      SmartWidget.init()
+      SmartWidget.setFont()
       
       sys.path.append(path.dirname(path.dirname(path.abspath(entry))))
       
       baseTabLoader.load(self.__notebook, Config.INSTANCE.json, Storage.INSTANCE.json)
       
       Config["version"] = __version__
+      
+      BaseStorage.addCurrentVersion()
+      
+      # for tab in baseTabLoader.tabs.values():
+      #    tab.baseTabStorage.clear()
       
       self.__notebook.place(relwidth = 1, relheight = 1)
       
@@ -99,20 +102,14 @@ class AppLauncher:
       return dict()
    
    def _loadConfigurationFiles(self):
-      result = dict()
-      
-      for name in self.__configurationFiles:
-         self.__configurationFiles[name] = self.__configurationFiles[name]()
-         
-         result[name] = self.__configurationFiles[name].load()
-      
-      return result
+      for configurationFile in self.__configurationFiles:
+         configurationFile.load()
    
    def _onDeleteWindow(self):
       for name in self.__notebook.tabs():
          self.__notebook.nametowidget(name).onDeleteWindow()
       
-      for config in self.__configurationFiles.values():
-         config.INSTANCE.dump()
+      for configurationFile in self.__configurationFiles:
+         configurationFile.dump()
       
       self.__root.destroy()

@@ -4,6 +4,8 @@ from numbers import Number
 from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
 # pylint: enable = unused-import
 from tkinter.ttk import Widget
+from ...json import Config
+from ...versions.storage import BaseStorage
 
 class SmartWidget:
    __FONT = None
@@ -46,10 +48,10 @@ class SmartWidget:
       if self.__value:
          self._defaultValue = self.__value.get()
       
-      self.__processValueDomains(kw)
+      self.__valueDomains = BaseStorage.get().processValueDomains(kw, self._namePrefix)
       
       if not self.__value and self.__valueDomains:
-         raise ValueError(f"'valueDomain(s)' specified for '{self._smartWidgetName}', but there's no value to serialize")
+         raise ValueError(f"'valueDomains' specified for '{self._smartWidgetName}', but there's no value to serialize")
       
       if self.__class__._TKINTER_BASE:
          if issubclass(self.__class__._TKINTER_BASE, Widget) and "style" not in kw:
@@ -94,57 +96,27 @@ class SmartWidget:
       if not self._smartWidgetName:
          raise ValueError("Can't serialize nameless widgets")
       
-      storage = self._smartWidgetStorage
-      
-      for keys in (("values", ""), *self.__valueDomains):
-         for k in keys:
-            storage = StaticUtils.setIfAbsentAndGet(storage, k, dict())
-      
-      for domain in self.__valueDomains:
-         storage = StaticUtils.setIfAbsentAndGet(storage, str(self._topLevelContainer.getSmartWidget(*domain).getValue()), dict())
-      
-      for name in (*self._namePrefix, self._smartWidgetName):
-         storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
-      
-      return storage
+      return BaseStorage.get().getValueStorage(
+         namePrefix = self._namePrefix,
+         smartWidgetName = self._smartWidgetName,
+         storage = self._smartWidgetStorage,
+         topLevelContainer = self._topLevelContainer,
+         valueDomains = self.__valueDomains)
    
    def _initValueAndTraceAdd(self):
       self.__loadValue()
       
       def _set(*_):
-         self._getValueStorage()[""] = self.__value.get()
+         self._getValueStorage()[BaseStorage.get().getValueKeyInStorage(self.__class__.__name__)] = self.__value.get()
       
       self.__value.trace_add("write", _set)
    
    def __loadValue(self):
-      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "value", self._defaultValue))
-   
-   def __processValueDomains(self, kw):
-      domainPresent = "valueDomain" in kw
-      
-      if all((domainPresent, "valueDomains" in kw)):
-         raise ValueError(f"Only one of {('valueDomain', 'valueDomains')} can be present")
-      
-      self.__valueDomains = [kw.pop("valueDomain")] if domainPresent else kw.pop("valueDomains", [])
-      
-      for i in range(len(self.__valueDomains)):
-         if isinstance(self.__valueDomains[i], str) and self.__valueDomains[i]:
-            self.__valueDomains[i] = self.__valueDomains[i].split(".")
-            
-            if not self.__valueDomains[i][0]:
-               self.__valueDomains[i][:1] = self._namePrefix
-         
-         elif not isinstance(self.__valueDomains[i], list):
-            raise ValueError()
+      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), BaseStorage.get().getValueKeyInStorage(self.__class__.__name__), self._defaultValue))
    
    @staticmethod
-   def init():
-      # pylint: disable = import-outside-toplevel
-      from ...json import Config
-      from ...versions.storage import BaseStorage
-      
+   def setFont():
       SmartWidget.__FONT = Config["widgetFont"]
-      SmartWidget.__STORAGE = BaseStorage.get(Config["version"])
    
    @staticmethod
    def _setFont(kw):

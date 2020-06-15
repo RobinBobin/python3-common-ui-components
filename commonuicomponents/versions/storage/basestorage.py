@@ -1,3 +1,5 @@
+from ...json import Config
+
 class BaseStorage:
    __storage = dict()
    
@@ -9,9 +11,38 @@ class BaseStorage:
       
       BaseStorage.__storage[version] = self
    
+   # pylint: disable = no-self-use
+   def getValueKeyInStorage(self, _smartWidgetClassName):
+      return "value"
+   
+   def getValueStorage(
+      self,
+      namePrefix,
+      smartWidgetName,
+      storage,
+      topLevelContainer,
+      valueDomains):
+      pass
+   
+   def processValueDomains(self, kw, namePrefix):
+      valueDomains = kw.pop("valueDomains", [])
+      
+      # pylint: disable = consider-using-enumerate
+      for i in range(len(valueDomains)):
+         valueDomains[i] = valueDomains[i].split(".")
+         
+         if not valueDomains[i][0]:
+            valueDomains[i][:1] = namePrefix
+      
+      return valueDomains
+   
    @staticmethod
-   def get(version):
-      return BaseStorage.__storage[version]
+   def addCurrentVersion():
+      type(f"Storage{Config['version']}", (BaseStorage, ), dict())()
+   
+   @staticmethod
+   def get():
+      return BaseStorage.__storage[Config["version"]]
    
    @staticmethod
    def init():

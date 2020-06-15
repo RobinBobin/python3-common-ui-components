@@ -19,7 +19,7 @@ class Result:
 
 
 class Json(metaclass = JsonMeta):
-   def __init__(self, paths):
+   def __init__(self, paths, raiseIfFailsToLoad):
       if hasattr(self.__class__, "INSTANCE"):
          raise ValueError()
       
@@ -27,10 +27,16 @@ class Json(metaclass = JsonMeta):
       
       self.__json = dict()
       self.__paths = paths if StaticUtils.isIterable(paths) else (paths, )
+      self.__raiseIfFailsToLoad = raiseIfFailsToLoad
+      self.__result = None
    
    @property
    def json(self):
       return self.__json
+   
+   @property
+   def result(self):
+      return self.__result
    
    def dump(self):
       try:
@@ -50,4 +56,9 @@ class Json(metaclass = JsonMeta):
             pass
          
          else:
-            return Result(bool(created))
+            self.__result = Result(bool(created))
+            
+            break
+      
+      if self.__result is None and self.__raiseIfFailsToLoad:
+         raise ValueError(f"{self.__class__.__name__} not loaded")

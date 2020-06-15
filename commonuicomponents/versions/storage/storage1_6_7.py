@@ -1,7 +1,30 @@
+from commonutils import StaticUtils
 from .basestorage import BaseStorage
 
 class Storage1_6_7(BaseStorage):
    # pylint: disable = no-self-use
+   def getValueKeyInStorage(self, smartWidgetClassName):
+      return "value" if smartWidgetClassName == "LabeledScale" else ""
+   
+   def getValueStorage(
+      self,
+      namePrefix,
+      smartWidgetName,
+      storage,
+      topLevelContainer,
+      valueDomains):
+      for keys in (("values", ""), *valueDomains):
+         for k in keys:
+            storage = StaticUtils.setIfAbsentAndGet(storage, k, dict())
+      
+      for domain in valueDomains:
+         storage = StaticUtils.setIfAbsentAndGet(storage, str(topLevelContainer.getSmartWidget(*domain).getValue()), dict())
+      
+      for name in (*namePrefix, smartWidgetName):
+         storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
+      
+      return storage
+   
    def processValueDomains(self, kw, namePrefix):
       domainPresent = "valueDomain" in kw
       

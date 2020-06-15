@@ -1,5 +1,5 @@
+from commonuicomponents.version import __version__
 from setuptools import find_packages, setup
-from commonuicomponents import __version__
 
 with open("README.md", "r") as fh:
    long_description = fh.read()
