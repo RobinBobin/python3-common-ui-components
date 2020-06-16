@@ -1,3 +1,4 @@
+from commonutils import StaticUtils
 from os import sys, path
 from tkinter import Tk
 from tkinter.ttk import Notebook, Style
@@ -5,48 +6,45 @@ from .basetabloader import BaseTabLoader
 from .json import Config, Storage
 from .ttk import CommonUIComponents, SmartWidget
 from .version import __version__
-from .versions.storage import BaseStorage
 
-def _maximizeUnderWindows(_):
-   try:
-      # pylint: disable = import-outside-toplevel
-      from ctypes import WinDLL
-      
-      user32 = WinDLL("user32")
-      user32.ShowWindow(user32.GetForegroundWindow(), 3)
+user32 = None
+
+if StaticUtils.isWindows():
+   from ctypes import WinDLL
    
-   except ImportError:
-      pass
+   user32 = WinDLL("user32")
+
 
 class AppLauncher:
    def __init__(self):
       self.__root = Tk()
       
-      self.__configurationFiles = [Config(), Storage()]
       self.__notebook = Notebook()
-      self.__notebook.bind("<Map>", _maximizeUnderWindows)
+      
+      if user32:
+         self.__notebook.bind("<Map>", self._maximizeUnderWindows)
    
    @property
    def root(self):
       return self.__root
    
    def run(self, entry, baseTabLoader = BaseTabLoader()):
+      self.__configurationFiles = self._createConfigurationInstances()
+      
       self._loadConfigurationFiles()
+      self._upgradeConfigurationFiles()
+      
+      Config["version"] = __version__
+      
       self._createStyles()
       self._configureRoot()
       
-      BaseStorage.init()
       CommonUIComponents.init(**self._getCommonUIComponentsInitParams())
       SmartWidget.setFont()
       
       sys.path.append(path.dirname(path.dirname(path.abspath(entry))))
       
       baseTabLoader.load(self.__notebook, Config.INSTANCE.json, Storage.INSTANCE.json)
-      
-      Config["version"] = __version__
-      
-      for tab in baseTabLoader.tabs.values():
-         tab.baseTabStorage.clear()
       
       self.__notebook.place(relwidth = 1, relheight = 1)
       
@@ -64,6 +62,10 @@ class AppLauncher:
       self.__root.resizable(False, True)
       self.__root.title(Config["title"])
       self.__root.protocol("WM_DELETE_WINDOW", self._onDeleteWindow)
+   
+   # pylint: disable = no-self-use
+   def _createConfigurationInstances(self):
+      return {"config": Config(), "storage": Storage()}
    
    def _createStyles(self):
       font = Config["widgetFont"]
@@ -95,19 +97,25 @@ class AppLauncher:
          for color in colors.items():
             self.__root.style.configure(f"{color[0]}.T{style[0]}Container.TBaseContainer.T{style[1]}", background = color[1])
    
-   # pylint: disable = no-self-use
    def _getCommonUIComponentsInitParams(self):
       return dict()
    
    def _loadConfigurationFiles(self):
-      for configurationFile in self.__configurationFiles:
+      for configurationFile in self.__configurationFiles.values():
          configurationFile.load()
+   
+   def _maximizeUnderWindows(self):
+      user32.ShowWindow(user32.GetForegroundWindow(), 3)
    
    def _onDeleteWindow(self):
       for name in self.__notebook.tabs():
          self.__notebook.nametowidget(name).onDeleteWindow()
       
-      for configurationFile in self.__configurationFiles:
+      for configurationFile in self.__configurationFiles.values():
          configurationFile.dump()
       
       self.__root.destroy()
+   
+   def _upgradeConfigurationFiles(self):
+      for configurationFile in self.__configurationFiles.values():
+         configurationFile.upgrade(Config["version"])

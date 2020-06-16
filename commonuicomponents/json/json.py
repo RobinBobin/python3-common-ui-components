@@ -1,5 +1,6 @@
 from json import dump, load
 from ..staticutils import StaticUtils
+from ..version import __version__
 
 class JsonMeta(type):
    def __getitem__(cls, key):
@@ -29,6 +30,7 @@ class Json(metaclass = JsonMeta):
       self.__paths = paths if StaticUtils.isIterable(paths) else (paths, )
       self.__raiseIfFailsToLoad = raiseIfFailsToLoad
       self.__result = None
+      self.__upgraders = dict()
    
    @property
    def json(self):
@@ -62,3 +64,24 @@ class Json(metaclass = JsonMeta):
       
       if self.__result is None and self.__raiseIfFailsToLoad:
          raise ValueError(f"{self.__class__.__name__} not loaded")
+      
+      # = Find upgraders = #
+      prefix = "_upgrader_"
+      
+      for version in StaticUtils.sortStringsAsIntegers(map(lambda upgraderName: upgraderName[len(prefix):], filter(lambda entry: entry.startswith(prefix), dir(self.__class__))), "_"):
+         self.__upgraders[version.replace("_", ".")] = getattr(self, f"{prefix}{version}")
+      
+      self.__upgraders[__version__] = None
+   
+   def upgrade(self, currentVersion):
+      if currentVersion not in self.__upgraders:
+         raise ValueError(currentVersion)
+      
+      started = False
+      
+      for version, upgrader in self.__upgraders.items():
+         if started or currentVersion == version:
+            if upgrader:
+               upgrader()
+            
+            started = True

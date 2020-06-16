@@ -5,7 +5,6 @@ from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
 # pylint: enable = unused-import
 from tkinter.ttk import Widget
 from ...json import Config
-from ...versions.storage import BaseStorage
 
 class SmartWidget:
    __FONT = None
@@ -48,7 +47,7 @@ class SmartWidget:
       if self.__value:
          self._defaultValue = self.__value.get()
       
-      self.__valueDomains = BaseStorage.get().processValueDomains(kw, self._namePrefix)
+      self.__valueDomains = tuple(map(self.__processValueDomains, kw.pop("valueDomains", [])))
       
       if not self.__value and self.__valueDomains:
          raise ValueError(f"'valueDomains' specified for '{self._smartWidgetName}', but there's no value to serialize")
@@ -96,23 +95,34 @@ class SmartWidget:
       if not self._smartWidgetName:
          raise ValueError("Can't serialize nameless widgets")
       
-      return BaseStorage.get().getValueStorage(
-         namePrefix = self._namePrefix,
-         smartWidgetName = self._smartWidgetName,
-         storage = self._smartWidgetStorage,
-         topLevelContainer = self._topLevelContainer,
-         valueDomains = self.__valueDomains)
+      storage = self._smartWidgetStorage
+      
+      for domain in self.__valueDomains:
+         storage = StaticUtils.setIfAbsentAndGet(storage, f"{domain}={str(self._topLevelContainer.getSmartWidget(*domain).getValue())}", dict())
+      
+      for name in (*self._namePrefix, self._smartWidgetName):
+         storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
+      
+      return storage
    
    def _initValueAndTraceAdd(self):
       self.__loadValue()
       
       def _set(*_):
-         self._getValueStorage()[BaseStorage.get().getValueKeyInStorage(self.__class__.__name__)] = self.__value.get()
+         self._getValueStorage()["value"] = self.__value.get()
       
       self.__value.trace_add("write", _set)
    
    def __loadValue(self):
-      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), BaseStorage.get().getValueKeyInStorage(self.__class__.__name__), self._defaultValue))
+      self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "value", self._defaultValue))
+   
+   def __processValueDomains(self, valueDomain):
+      valueDomain = valueDomain.split(".")
+      
+      if not valueDomain[0]:
+         valueDomain[:1] = self._namePrefix
+      
+      return valueDomain
    
    @staticmethod
    def setFont():
