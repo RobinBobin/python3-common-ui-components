@@ -1,3 +1,4 @@
+from commonutils import StaticUtils
 from ...json import Config
 from ...version import __version__
 
@@ -23,7 +24,13 @@ class BaseStorage:
       storage,
       topLevelContainer,
       valueDomains):
-      pass
+      for domain in valueDomains:
+         storage = StaticUtils.setIfAbsentAndGet(storage, f"{domain}={str(topLevelContainer.getSmartWidget(*domain).getValue())}", dict())
+      
+      for name in (*namePrefix, smartWidgetName):
+         storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
+      
+      return storage
    
    def processValueDomains(self, kw, namePrefix):
       valueDomains = kw.pop("valueDomains", [])
