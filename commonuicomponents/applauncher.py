@@ -45,10 +45,8 @@ class AppLauncher:
       
       Config["version"] = __version__
       
-      BaseStorage.addCurrentVersion()
-      
-      # for tab in baseTabLoader.tabs.values():
-      #    tab.baseTabStorage.clear()
+      for tab in baseTabLoader.tabs.values():
+         tab.baseTabStorage.clear()
       
       self.__notebook.place(relwidth = 1, relheight = 1)
       

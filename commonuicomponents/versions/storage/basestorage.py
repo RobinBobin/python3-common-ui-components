@@ -1,4 +1,5 @@
 from ...json import Config
+from ...version import __version__
 
 class BaseStorage:
    __storage = dict()
@@ -7,7 +8,7 @@ class BaseStorage:
       version = self.__class__.__name__[7:].replace("_", ".")
       
       if version in BaseStorage.__storage:
-         raise ValueError()
+         raise ValueError(version)
       
       BaseStorage.__storage[version] = self
    
@@ -37,14 +38,12 @@ class BaseStorage:
       return valueDomains
    
    @staticmethod
-   def addCurrentVersion():
-      type(f"Storage{Config['version']}", (BaseStorage, ), dict())()
-   
-   @staticmethod
    def get():
       return BaseStorage.__storage[Config["version"]]
    
    @staticmethod
    def init():
+      type(f"Storage{__version__}", (BaseStorage, ), dict())
+      
       for storage in BaseStorage.__subclasses__():
          storage()
