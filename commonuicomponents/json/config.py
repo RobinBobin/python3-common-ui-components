@@ -25,7 +25,11 @@ class Config(Json):
          raise ValueError()
       
       # = valueDomain -> valueDomains = #
-      # self.json = loads(dumps(self.json).replace("valueDomain", "valueDomains"))
+      for keys in StaticUtils.findKeyInDictionary(self.json, "valueDomain"):
+         print(keys)
+         c = StaticUtils.indexDictionary(self.json, keys)
+         
+         c["valueDomains"] = [c.pop("valueDomain")]
       
       # = Transfer relevant data to Storage = #
       def transfer(config, storage):
