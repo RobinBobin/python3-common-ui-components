@@ -24,6 +24,9 @@ class Config(Json):
       if Storage.INSTANCE.result is not None:
          raise ValueError()
       
+      # = valueDomain -> valueDomains = #
+      # self.json = loads(dumps(self.json).replace("valueDomain", "valueDomains"))
+      
       # = Transfer relevant data to Storage = #
       def transfer(config, storage):
          storage["selectedIndex"] = config.pop("selectedIndex", 0)
@@ -42,5 +45,8 @@ class Config(Json):
       
       transfer(self.json, Storage)
       
-      # = valueDomain -> valueDomains = #
-      # self.json = loads(dumps(self.json).replace("valueDomain", "valueDomains"))
+      # = "" -> "value" = #
+      for keys in StaticUtils.findKeyInDictionary(Storage.INSTANCE.json, ""):
+         s = StaticUtils.indexDictionary(Storage, keys)
+         
+         s["value"] = s.pop("")
