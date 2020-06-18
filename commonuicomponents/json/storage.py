@@ -5,6 +5,7 @@ class Storage(Json):
       super().__init__("storage.json", False)
    
    def _upgrader_1_6_7(self):
+      # = Everything is done in Config._upgrader_1_6_7() = #
       pass
 
 

@@ -1,6 +1,5 @@
 from pathlib import Path
 from .json import Json
-from .storage import Storage
 from ..staticutils import StaticUtils
 
 class Config(Json):
@@ -19,38 +18,44 @@ class Config(Json):
             if not isinstance(widgetFont, str) and len(widgetFont) > 1:
                widgetFont[1] = StaticUtils.round(widgetFont[1] / 1.2)
    
+   # pylint: disable = no-self-use
    def _upgrader_1_6_7(self):
-      # = The storage file must not exist = #
-      if Storage.INSTANCE.result is not None:
-         raise ValueError()
+      raise Exception("Not implemented")
       
-      # = valueDomain -> valueDomains = #
-      for keys in StaticUtils.findKeyInDictionary(self.json, "valueDomain"):
-         print(keys)
-         c = StaticUtils.indexDictionary(self.json, keys)
-         
-         c["valueDomains"] = [c.pop("valueDomain")]
+      # # = The storage file must not exist = #
+      # if Storage.INSTANCE.result is not None:
+      #    raise ValueError()
       
-      # = Transfer relevant data to Storage = #
-      def transfer(config, storage):
-         storage["selectedIndex"] = config.pop("selectedIndex", 0)
-         storage["tabs"] = dict()
+      # # = valueDomain -> valueDomains = #
+      # for keys in StaticUtils.findKeyInDictionary(self.json, "valueDomain"):
+      #    c = StaticUtils.indexDictionary(self.json, keys)
          
-         storage = storage["tabs"]
+      #    c["valueDomains"] = [c.pop("valueDomain")]
+      
+      # # = Transfer relevant data to Storage = #
+      # def transfer(config, storage):
+      #    storage["selectedIndex"] = config.pop("selectedIndex", 0)
+      #    storage["tabs"] = dict()
          
-         for name, tab in config["tabs"].items():
-            storage[name] = dict()
+      #    storage = storage["tabs"]
+         
+      #    for name, tab in config["tabs"].items():
+      #       storage[name] = dict()
             
-            if "values" in tab:
-               storage[name]["values"] = tab.pop("values").pop("")
+      #       if "values" in tab:
+      #          storage[name]["values"] = tab.pop("values").pop("")
             
-            if "tabs" in tab:
-               transfer(tab, storage[name])
+      #       if "tabs" in tab:
+      #          transfer(tab, storage[name])
       
-      transfer(self.json, Storage)
+      # transfer(self.json, Storage)
       
-      # = "" -> "value" = #
-      for keys in StaticUtils.findKeyInDictionary(Storage.INSTANCE.json, ""):
-         s = StaticUtils.indexDictionary(Storage, keys)
+      # # = "" -> "value" = #
+      # for keys in StaticUtils.findKeyInDictionary(Storage.INSTANCE.json, ""):
+      #    s = StaticUtils.indexDictionary(Storage, keys)
          
-         s["value"] = s.pop("")
+      #    s["value"] = s.pop("")
+      
+      # # = Upgrade valueDomains = #
+      # for keys in StaticUtils.findKeyInDictionary(self.json, "valueDomains"):
+      #    print(keys)

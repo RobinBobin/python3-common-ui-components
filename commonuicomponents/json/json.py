@@ -97,3 +97,4 @@ class Json(metaclass = JsonMeta):
    def __dump(self, path):
       with open(path, "w", encoding = "utf-8") as f:
          dump(self.__json, f, ensure_ascii = False, indent = 3)
+         f.write("\n")
