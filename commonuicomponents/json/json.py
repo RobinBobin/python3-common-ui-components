@@ -1,4 +1,6 @@
 from json import dump, load
+from os import remove
+from pathlib import Path
 from ..staticutils import StaticUtils
 from ..version import __version__
 
@@ -42,8 +44,7 @@ class Json(metaclass = JsonMeta):
    
    def dump(self):
       try:
-         with open(self.__paths[0], "w", encoding = "utf-8") as f:
-            dump(self.__json, f, ensure_ascii = False, indent = 3)
+         self.__dump(self.__paths[0])
       
       except BaseException as e:
          StaticUtils.showerror(e)
@@ -82,6 +83,17 @@ class Json(metaclass = JsonMeta):
       for version, upgrader in self.__upgraders.items():
          if started or currentVersion == version:
             if upgrader:
+               p = Path(self.__paths[0])
+               backup = f"{p.stem}_{version}{p.suffix}"
+               
+               self.__dump(backup)
+               
                upgrader()
+               
+               remove(backup)
             
             started = True
+   
+   def __dump(self, path):
+      with open(path, "w", encoding = "utf-8") as f:
+         dump(self.__json, f, ensure_ascii = False, indent = 3)

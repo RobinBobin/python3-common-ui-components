@@ -118,4 +118,4 @@ class AppLauncher:
    
    def _upgradeConfigurationFiles(self):
       for configurationFile in self.__configurationFiles.values():
-         configurationFile.upgrade(Config["version"])
+         configurationFile.upgrade(Config.INSTANCE.json.get("version", "1.6.7"))
