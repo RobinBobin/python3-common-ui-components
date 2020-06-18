@@ -98,7 +98,7 @@ class SmartWidget:
       storage = self._smartWidgetStorage
       
       for domain in self.__valueDomains:
-         storage = StaticUtils.setIfAbsentAndGet(storage, f"{domain}={str(self._topLevelContainer.getSmartWidget(*domain).getValue())}", dict())
+         storage = StaticUtils.setIfAbsentAndGet(storage, f"{'.'.join(domain)}={str(self._topLevelContainer.getSmartWidget(*domain).getValue())}", dict())
       
       for name in (*self._namePrefix, self._smartWidgetName):
          storage = StaticUtils.setIfAbsentAndGet(storage, name, dict())
