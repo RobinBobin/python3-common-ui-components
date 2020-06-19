@@ -104,7 +104,7 @@ class AppLauncher:
       for configurationFile in self.__configurationFiles.values():
          configurationFile.load()
    
-   def _maximizeUnderWindows(self):
+   def _maximizeUnderWindows(self, _):
       user32.ShowWindow(user32.GetForegroundWindow(), 3)
    
    def _onDeleteWindow(self):
