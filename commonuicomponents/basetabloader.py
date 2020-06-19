@@ -20,7 +20,12 @@ class BaseTabLoader:
       
       for name, config in wholeConfig["tabs"].items():
          if not config.get("skip", explicitAddition):
-            tab = import_module(f"{tabsDir}.{name}").Tab(notebook, config, StaticUtils.setIfAbsentAndGet(wholeStorage, name, dict()), **baseTabKw)
+            storage = wholeStorage
+            
+            for key in ("tabs", name, "values"):
+               storage = StaticUtils.setIfAbsentAndGet(storage, key, dict())
+            
+            tab = import_module(f"{tabsDir}.{name}").Tab(notebook, config, storage, **baseTabKw)
             
             self.__tabs[name] = tab
             
