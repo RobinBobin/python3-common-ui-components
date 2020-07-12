@@ -9,7 +9,7 @@ class BaseTab(Frame):
       self.__frame = Frame(self)
       self.__storage = storage
       
-      self.__frame.pack(expand = True)
+      self._addFrame()
       
       if "ui" in config:
          self.__ui = CommonUIComponents.inflate(self)
@@ -32,6 +32,10 @@ class BaseTab(Frame):
    def baseTabStorage(self):
       return self.__storage
    
+   @property
+   def baseTabUi(self):
+      return self.__ui
+   
    def dumpNamedChildren(self):
       # pylint: disable = import-outside-toplevel
       from .ttk.containers.basecontainer import BaseContainer
@@ -52,3 +56,6 @@ class BaseTab(Frame):
    
    def onDeleteWindow(self):
       pass
+   
+   def _addFrame(self):
+      self.__frame.pack(expand = True)

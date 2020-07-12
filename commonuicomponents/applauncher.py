@@ -37,6 +37,7 @@ class AppLauncher:
       Config["version"] = __version__
       
       self._createStyles()
+      self._createLayouts()
       self._configureRoot()
       
       CommonUIComponents.init(**self._getCommonUIComponentsInitParams())
@@ -96,6 +97,12 @@ class AppLauncher:
       for style in styles.items():
          for color in colors.items():
             self.__root.style.configure(f"{color[0]}.T{style[0]}Container.TBaseContainer.T{style[1]}", background = color[1])
+   
+   def _createLayouts(self):
+      name = "Scrollbar"
+      
+      for orient in ("Horizontal", "Vertical"):
+         self.__root.style.layout(f"{orient}.T{name}.T{name}", self.__root.style.layout(f"{orient}.T{name}"))
    
    def _getCommonUIComponentsInitParams(self):
       return dict()

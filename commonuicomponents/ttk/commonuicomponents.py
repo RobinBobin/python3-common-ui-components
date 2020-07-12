@@ -41,6 +41,8 @@ class CommonUIComponents:
       from .widgets.combobox import Combobox
       from .widgets.entry import Entry
       from .widgets.labeledscale import LabeledScale
+      from .widgets.listbox import Listbox
+      from .widgets.scrollbar import Scrollbar
       from .widgets.spinbox import Spinbox
       from .widgets.statefulbutton import StatefulButton
       
@@ -55,6 +57,8 @@ class CommonUIComponents:
          LabeledContainer,
          LabeledRadioButtonGroup,
          LabeledScale,
+         Listbox,
+         Scrollbar,
          Spinbox,
          StatefulButton
       ):
