@@ -1,8 +1,8 @@
+from itertools import dropwhile
 from json import dump, load
 from os import remove
 from pathlib import Path
 from ..staticutils import StaticUtils
-from ..version import __version__
 
 class JsonMeta(type):
    def __getitem__(cls, key):
@@ -71,28 +71,17 @@ class Json(metaclass = JsonMeta):
       
       for version in StaticUtils.sortStringsAsIntegers(map(lambda upgraderName: upgraderName[len(prefix):], filter(lambda entry: entry.startswith(prefix), dir(self.__class__))), "_"):
          self.__upgraders[version.replace("_", ".")] = getattr(self, f"{prefix}{version}")
-      
-      self.__upgraders[__version__] = None
    
    def upgrade(self, currentVersion):
-      if currentVersion not in self.__upgraders:
-         raise ValueError(currentVersion)
-      
-      started = False
-      
-      for version, upgrader in self.__upgraders.items():
-         if started or currentVersion == version:
-            if upgrader:
-               p = Path(self.__paths[0])
-               backup = f"{p.stem}_{version}{p.suffix}"
-               
-               self.__dump(backup)
-               
-               upgrader()
-               
-               remove(backup)
-            
-            started = True
+      for version, upgrader in dropwhile(lambda e: e[0] != currentVersion, self.__upgraders.items()):
+         p = Path(self.__paths[0])
+         backup = f"{p.stem}_{version}{p.suffix}"
+         
+         self.__dump(backup)
+         
+         upgrader()
+         
+         remove(backup)
    
    def __dump(self, path):
       with open(path, "w", encoding = "utf-8") as f:
