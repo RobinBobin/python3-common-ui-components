@@ -1,13 +1,20 @@
-from importlib import import_module
 from tkinter.ttk import Frame
 from .ttk import CommonUIComponents
 
 class BaseTab(Frame):
-   def __init__(self, master = None, **kw):
+   def __init__(self, master, config, storage, **kw):
       super().__init__(master, **kw)
       
+      self.__config = config
       self.__frame = Frame(self)
-      self.__frame.pack(expand = True)
+      self.__storage = storage
+      
+      self._addFrame()
+      
+      if "ui" in config:
+         self.__ui = CommonUIComponents.inflate(self)
+         
+         self.__ui.grid()
    
    @property
    def baseTabCaption(self):
@@ -21,7 +28,16 @@ class BaseTab(Frame):
    def baseTabFrame(self):
       return self.__frame
    
+   @property
+   def baseTabStorage(self):
+      return self.__storage
+   
+   @property
+   def baseTabUi(self):
+      return self.__ui
+   
    def dumpNamedChildren(self):
+      # pylint: disable = import-outside-toplevel
       from .ttk.containers.basecontainer import BaseContainer
       
       def dump(container):
@@ -41,46 +57,5 @@ class BaseTab(Frame):
    def onDeleteWindow(self):
       pass
    
-   def _inflate(self, config):
-      self.__config = config
-      
-      if "ui" in config:
-         self.__ui = CommonUIComponents.inflate(self)
-         
-         self.__ui.grid()
-
-
-class BaseTabLoader:
-   def load(self, notebook, wholeConfig, **baseTabKw):
-      self.__notebook = notebook
-      self.__wholeConfig = wholeConfig
-      
-      notebook.bind("<<NotebookTabChanged>>", self._onTabChanged)
-      
-      explicitAddition = wholeConfig.get("explicitAddition", False)
-      selectedIndex = wholeConfig.get("selectedIndex", 0)
-      tabsDir = wholeConfig["tabsDir"]
-      
-      tabs = dict()
-      
-      for name, config in wholeConfig["tabs"].items():
-         if not config.get("skip", explicitAddition):
-            module = import_module(f"{tabsDir}.{name}")
-            
-            tab = module.Tab(notebook, **baseTabKw)
-            tab._inflate(config)
-            
-            tabs[name] = tab
-            
-            notebook.add(tab, text = tab.baseTabCaption)
-      
-      if len(tabs):
-         if selectedIndex >= len(tabs):
-            selectedIndex = len(tabs) - 1
-         
-         notebook.select(selectedIndex)
-      
-      return tabs
-   
-   def _onTabChanged(self, event):
-      self.__wholeConfig["selectedIndex"] = self.__notebook.index(self.__notebook.select())
+   def _addFrame(self):
+      self.__frame.pack(expand = True)

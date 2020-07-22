@@ -14,7 +14,7 @@ class LabeledScale(SmartWidget):
       
       valueIsNone = "value" not in kw
       
-      SmartWidget._setVariable(kw, "IntVar", valueKeyInStorage = "value")
+      SmartWidget._setVariable(kw, "IntVar")
       
       self.__frame = Frame(master) if twoRows else None
       
@@ -28,22 +28,18 @@ class LabeledScale(SmartWidget):
       
       # = Caption = #
       self.__caption = Label(master, text = kw["text"])
-      self.__value = Label(master, anchor = E)
+      self.__valueLabel = Label(master, anchor = E)
       
       # = Scale = #
       self.getRawValue().trace_add("write", self.onChanged)
       
       storage = self._getValueStorage()
       
-      if "" in storage:
-         self.getRawValue().set(storage.pop(""))
+      for index, key in enumerate(("from_", "to")):
+         if key in storage:
+            kw["range"][index] = storage[key]
       
-      else:
-         for index, key in enumerate(("from_", "to")):
-            if key in storage:
-               kw["range"][index] = storage[key]
-         
-         self.getRawValue().set(StaticUtils.setIfAbsentAndGet(storage, "value", (kw["range"][0] if valueIsNone else self.getValue()) // self.__step))
+      self.getRawValue().set(StaticUtils.setIfAbsentAndGet(storage, "value", (kw["range"][0] if valueIsNone else self.getValue()) // self.__step))
       
       from_, to = tuple(v // self.__step for v in kw["range"])
       
@@ -70,7 +66,7 @@ class LabeledScale(SmartWidget):
          self.__frame.grid(sticky = W + E, **kw)
          
          self.__caption.grid(column = 0, row = 0, sticky = W)
-         self.__value.grid(column = 1, padx = (20, 0), row = 0, sticky = E)
+         self.__valueLabel.grid(column = 1, padx = (20, 0), row = 0, sticky = E)
          self.__scale.grid(column = 0, columnspan = 2, pady = (20, 0), row = 1, sticky = W + E)
       
       else:
@@ -80,7 +76,7 @@ class LabeledScale(SmartWidget):
          
          kw["column"] += 1
          kw["padx"] = [20, 0]
-         self.__value.grid(sticky = W + E, **kw)
+         self.__valueLabel.grid(sticky = W + E, **kw)
          
          kw["column"] += 1
          kw["padx"][1] = padxRight
@@ -89,7 +85,7 @@ class LabeledScale(SmartWidget):
    def onChanged(self, *_):
       value = self.getRawValue().get()
       
-      self.__value["text"] = value * self.__step
+      self.__valueLabel["text"] = value * self.__step
       
       self._getValueStorage()["value"] = value
    
@@ -113,4 +109,4 @@ class LabeledScale(SmartWidget):
       self.__setValueWidth()
    
    def __setValueWidth(self):
-      self.__value["width"] = max(StaticUtils.getPlaces([x * self.__step for x in (self.__scale["from"], self.__scale["to"])]))
+      self.__valueLabel["width"] = max(StaticUtils.getPlaces([x * self.__step for x in (self.__scale["from"], self.__scale["to"])]))

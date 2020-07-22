@@ -1,4 +1,5 @@
 from copy import deepcopy
+from tkinter import Widget
 from tkinter.ttk import Style
 from .multiplier import Multiplier
 from .widgets.smartwidget import SmartWidget
@@ -9,7 +10,7 @@ class CommonUIComponents:
    
    @staticmethod
    def inflate(tab):
-      ui = CommonUIComponents._inflate(tab.baseTabFrame, [tab.baseTabConfig["ui"]], tab.baseTabConfig, [])
+      ui = CommonUIComponents._inflate(tab.baseTabFrame, [tab.baseTabConfig["ui"]], tab.baseTabStorage, [])
       
       if len(ui) != 1:
          raise ValueError("len(ui) != 1")
@@ -28,6 +29,7 @@ class CommonUIComponents:
       for key, value in params.items():
          setattr(CommonUIComponents, key.upper(), value)
       
+      # pylint: disable = import-outside-toplevel
       SmartWidget._STYLE_INSTANCE = Style()
       
       from tkinter import Canvas
@@ -39,6 +41,8 @@ class CommonUIComponents:
       from .widgets.combobox import Combobox
       from .widgets.entry import Entry
       from .widgets.labeledscale import LabeledScale
+      from .widgets.listbox import Listbox
+      from .widgets.scrollbar import Scrollbar
       from .widgets.spinbox import Spinbox
       from .widgets.statefulbutton import StatefulButton
       
@@ -53,6 +57,8 @@ class CommonUIComponents:
          LabeledContainer,
          LabeledRadioButtonGroup,
          LabeledScale,
+         Listbox,
+         Scrollbar,
          Spinbox,
          StatefulButton
       ):
@@ -65,8 +71,6 @@ class CommonUIComponents:
       
       clazz.STYLE = [clazz]
       clazz._TKINTER_BASE = None
-      
-      from tkinter import Widget
       
       for base in clazz.__bases__:
          if issubclass(base, Widget):
@@ -99,7 +103,7 @@ class CommonUIComponents:
       CommonUIComponents.registerClass(type(tkinterBase.__name__, (SmartWidget, tkinterBase), dict()))
    
    @staticmethod
-   def _inflate(master, children, config, namePrefix):
+   def _inflate(master, children, storage, namePrefix):
       result = dict()
       
       row = 0
@@ -128,7 +132,7 @@ class CommonUIComponents:
             grid["row"] = row
             grid["column"] = column
             
-            ch["config"] = config
+            ch["storage"] = storage
             ch["namePrefix"] = namePrefix
             
             multiply.setIndexableToChild(ch, "name", i)
