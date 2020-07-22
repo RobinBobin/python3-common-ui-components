@@ -1,9 +1,13 @@
 from json import load
 from subprocess import check_output
+from .staticutils import StaticUtils
 
 class AppBuilder:
    def __init__(self):
       self._hiddenImports = []
+      
+      if StaticUtils.isWindows():
+         self._hiddenImports.append("pkg_resources.py2_warn")
    
    def build(self, entry):
       with open("default_config.json", encoding = "utf-8") as f:
