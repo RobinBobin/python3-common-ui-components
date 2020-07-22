@@ -6,7 +6,7 @@ class BaseTabLoader:
    def tabs(self):
       return self.__tabs
    
-   def load(self, notebook, wholeConfig, wholeStorage, **baseTabKw):
+   def load(self, notebook, wholeConfig, wholeStorage, package = None, **baseTabKw):
       self.__notebook = notebook
       self.__wholeStorage = wholeStorage
       
@@ -25,7 +25,7 @@ class BaseTabLoader:
             for key in ("tabs", name, "values"):
                storage = StaticUtils.setIfAbsentAndGet(storage, key, dict())
             
-            tab = import_module(f"{tabsDir}.{name}").Tab(notebook, config, storage, **baseTabKw)
+            tab = import_module(f"{tabsDir}.{name}", package).Tab(notebook, config, storage, **baseTabKw)
             
             self.__tabs[name] = tab
             

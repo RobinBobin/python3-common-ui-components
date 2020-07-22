@@ -1,3 +1,4 @@
+from .appbuilder import AppBuilder
 from .applauncher import AppLauncher
 from .basetab import BaseTab
 from .basetabloader import BaseTabLoader
