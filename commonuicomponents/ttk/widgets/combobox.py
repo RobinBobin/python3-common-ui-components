@@ -5,6 +5,14 @@ class Combobox(SmartWidget, TtkCombobox):
    def __init__(self, master, **kw):
       SmartWidget._setFont(kw)
       
+      if isinstance(kw["values"], dict):
+         values = kw["values"]
+         text = values["text"]
+         count = values["count"]
+         offset = values.get("offset", 0)
+         
+         kw["values"] = [f"{text}{i + offset}" for i in range(count)]
+      
       if "value" not in kw:
          kw["value"] = kw["values"][0]
       
