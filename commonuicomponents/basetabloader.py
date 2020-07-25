@@ -40,4 +40,8 @@ class BaseTabLoader:
       return self.__tabs
    
    def _onTabChanged(self, _):
-      self.__wholeStorage["selectedIndex"] = self.__notebook.index(self.__notebook.select())
+      name = self.__notebook.select()
+      
+      self.__wholeStorage["selectedIndex"] = self.__notebook.index(name)
+      
+      self.__notebook.nametowidget(name).onTabChanged()

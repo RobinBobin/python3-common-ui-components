@@ -57,5 +57,8 @@ class BaseTab(Frame):
    def onDeleteWindow(self):
       pass
    
+   def onTabChanged(self):
+      pass
+   
    def _addFrame(self):
       self.__frame.pack(expand = True)
