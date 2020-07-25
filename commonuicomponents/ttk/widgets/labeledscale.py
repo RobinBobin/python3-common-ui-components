@@ -50,7 +50,16 @@ class LabeledScale(SmartWidget):
          to = to,
          variable = self.getRawValue())
       
+      if "state" in kw:
+         self.__scale["state"] = kw["state"]
+      
       self.__setValueWidth()
+   
+   def __getitem__(self, key):
+      return self.__scale[key]
+   
+   def __setitem__(self, key, value):
+      self.__scale[key] = value
    
    def bindScale(self, event, handler):
       self.__scale.bind(event, handler)
