@@ -1,4 +1,4 @@
-from .labeledcontainer import LabeledContainer
+from . import LabeledContainer
 
 class LabeledRadioButtonGroup(LabeledContainer):
    def __init__(self, master, **kw):

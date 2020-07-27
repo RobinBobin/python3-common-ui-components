@@ -34,17 +34,17 @@ class CommonUIComponents:
       
       from tkinter import Canvas
       from tkinter.ttk import Button, Label, Radiobutton
-      from .containers.container import Container
-      from .containers.labeledcontainer import LabeledContainer
-      from .containers.labeledradiobuttongroup import LabeledRadioButtonGroup
-      from .widgets.checkbutton import Checkbutton
-      from .widgets.combobox import Combobox
-      from .widgets.entry import Entry
-      from .widgets.labeledscale import LabeledScale
-      from .widgets.listbox import Listbox
-      from .widgets.scrollbar import Scrollbar
-      from .widgets.spinbox import Spinbox
-      from .widgets.statefulbutton import StatefulButton
+      from .containers import Container
+      from .containers import LabeledContainer
+      from .containers import LabeledRadioButtonGroup
+      from .widgets import Checkbutton
+      from .widgets import Combobox
+      from .widgets import Entry
+      from .widgets import LabeledScale
+      from .widgets import Listbox
+      from .widgets import Scrollbar
+      from .widgets import Spinbox
+      from .widgets import StatefulButton
       
       for tkinterBase in (Button, Canvas, Label, Radiobutton):
          CommonUIComponents.wrapClass(tkinterBase)
@@ -72,18 +72,21 @@ class CommonUIComponents:
       clazz.STYLE = [clazz]
       clazz._TKINTER_BASE = None
       
+      smartWidgetBaseFound = False
+      
       for base in clazz.__bases__:
-         if issubclass(base, Widget):
-            clazz._TKINTER_BASE = CommonUIComponents.__CLASSES["LabeledContainer"]._TKINTER_BASE if clazz.__name__ == "LabeledRadioButtonGroup" else base # TODO Dirty hack :( .
-         
          if issubclass(base, SmartWidget):
-            while base != SmartWidget:
-               clazz.STYLE.append(base)
+            if smartWidgetBaseFound:
+               CommonUIComponents.__raiseInheritsMoreThanOnce(clazz, SmartWidget)
                
-               for b in base.__bases__:
-                  if issubclass(b, SmartWidget):
-                     base = b
-                     break
+            smartWidgetBaseFound = True
+            
+            CommonUIComponents.__addSmartWidgetHierarchy(clazz.STYLE, base)
+         
+         if clazz._TKINTER_BASE:
+            CommonUIComponents.__raiseInheritsMoreThanOnce(clazz, Widget)
+         
+         clazz._TKINTER_BASE = CommonUIComponents.__getTKinterBase(base)
       
       if clazz._TKINTER_BASE:
          clazz.STYLE.append(clazz._TKINTER_BASE)
@@ -155,3 +158,33 @@ class CommonUIComponents:
                logicalColumn += 1
       
       return result
+   
+   @staticmethod
+   def __addSmartWidgetHierarchy(styleArray, clazz):
+      if clazz != SmartWidget:
+         styleArray.append(clazz)
+      
+      for base in clazz.__bases__:
+         if issubclass(base, SmartWidget) and base != SmartWidget:
+            CommonUIComponents.__addSmartWidgetHierarchy(styleArray, base)
+   
+   @staticmethod
+   def __getTKinterBase(clazz):
+      result = None
+      
+      if issubclass(clazz, Widget):
+         if issubclass(clazz, SmartWidget):
+            for base in clazz.__bases__:
+               result = CommonUIComponents.__getTKinterBase(base)
+               
+               if result:
+                  break
+         
+         else:
+            result = clazz
+      
+      return result
+   
+   @staticmethod
+   def __raiseInheritsMoreThanOnce(child, parent):
+      raise ValueError(f"{child.__name__} inherits {parent.__name__} more than once")
