@@ -22,6 +22,7 @@ class PeriodicalAfter:
       return self
    
    def stop(self):
-      self.__widget.after_cancel(self.__id)
-      
-      self.__id = None
+      if self.__id is not None:
+         self.__widget.after_cancel(self.__id)
+         
+         self.__id = None
