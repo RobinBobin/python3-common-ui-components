@@ -18,6 +18,8 @@ class PeriodicalAfter:
          self.__id = self.__widget.after(delay_ms, callback) if delay_ms else self.__widget.after_idle(callback)
       
       setId()
+      
+      return self
    
    def stop(self):
       self.__widget.after_cancel(self.__id)
