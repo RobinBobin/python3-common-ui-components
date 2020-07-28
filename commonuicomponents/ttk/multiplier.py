@@ -38,7 +38,9 @@ class Multiplier:
             child[key] = indexable[index]
          
          else:
-            child[key] = self._formatIndexable(indexable, index, 1 + self.__multiply.get(f"offsetOfIndexIn{key.title()}", Multiplier.__DEFAULT_OFFSETS.get(key, 0)))
+            offset = 1 + self.__multiply.get(f"offsetOfIndexIn{key.title()}", Multiplier.__DEFAULT_OFFSETS.get(key, 0))
+            
+            child[key] = f"{indexable}{index + offset}" if key == "name" else self._formatIndexable(indexable, index, offset)
    
    def _formatIndexable(self, indexable, index, offset):
       _ = self
