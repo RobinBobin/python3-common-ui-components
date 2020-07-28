@@ -5,20 +5,19 @@ class Multiplier:
       "name": -1
    }
    
-   def __init__(self, child):
+   def __init__(self, childType, child):
       self.__multiply = child.pop("multiply", dict())
       self.__indexables = {key: child.pop(key, None) for key in ("text", "name")}
+      self.__childPseudoType = child.pop("pseudoType", childType)
       
       text = self.__indexables["text"]
       
       if text and "count" not in self.__multiply and StaticUtils.isIterable(text):
          self.__multiply["count"] = len(text)
    
-   def setIndexableToChild(self, child, key, index):
-      indexable = self.__indexables[key]
-      
-      if indexable is not None:
-         child[key] = indexable if "count" not in self.__multiply else indexable[index] if StaticUtils.isIterable(indexable) else "{0}{1}".format(indexable, index + 1 + self.__multiply.get(f"offsetOfIndexIn{key.title()}", Multiplier.__DEFAULT_OFFSETS.get(key, 0)))
+   @property
+   def childPseudoType(self):
+      return self.__childPseudoType
    
    @property
    def count(self):
@@ -27,3 +26,21 @@ class Multiplier:
    @property
    def lastChildAddsRow(self):
       return self.__multiply.get("lastChildAddsRow", False)
+   
+   def setIndexableToChild(self, child, key, index):
+      indexable = self.__indexables[key]
+      
+      if indexable is not None:
+         if "count" not in self.__multiply:
+            child[key] = indexable
+         
+         elif StaticUtils.isIterable(indexable):
+            child[key] = indexable[index]
+         
+         else:
+            child[key] = self._formatIndexable(indexable, index, 1 + self.__multiply.get(f"offsetOfIndexIn{key.title()}", Multiplier.__DEFAULT_OFFSETS.get(key, 0)))
+   
+   def _formatIndexable(self, indexable, index, offset):
+      _ = self
+      
+      return f"{indexable}{index + offset}"

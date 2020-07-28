@@ -1,8 +1,9 @@
 from copy import deepcopy
+from stringcase import constcase, snakecase
 from tkinter import Widget
 from tkinter.ttk import Style
 from .multiplier import Multiplier
-from .widgets.smartwidget import SmartWidget
+from .widgets import SmartWidget
 from ..staticutils import StaticUtils
 
 class CommonUIComponents:
@@ -23,11 +24,12 @@ class CommonUIComponents:
    @staticmethod
    def init(**params):
       params = StaticUtils.mergeJson({
-         "debug": False
+         "debug": False,
+         "multiplierType": Multiplier
       }, params, True)
       
       for key, value in params.items():
-         setattr(CommonUIComponents, key.upper(), value)
+         setattr(CommonUIComponents, constcase(snakecase(key)), value)
       
       # pylint: disable = import-outside-toplevel
       SmartWidget._STYLE_INSTANCE = Style()
@@ -119,12 +121,12 @@ class CommonUIComponents:
          child = deepcopy(child)
          
          childType = child.pop("type")
-         multiply = Multiplier(child)
+         multiplier = CommonUIComponents.MULTIPLIER_TYPE(childType, child)
          
-         for i in range(multiply.count):
+         for i in range(multiplier.count):
             ch = deepcopy(child)
             
-            multiply.setIndexableToChild(ch, "text", i)
+            multiplier.setIndexableToChild(ch, "text", i)
             
             grid = StaticUtils.setIfAbsentAndGet(ch, "grid", dict())
             
@@ -138,13 +140,13 @@ class CommonUIComponents:
             ch["storage"] = storage
             ch["namePrefix"] = namePrefix
             
-            multiply.setIndexableToChild(ch, "name", i)
+            multiplier.setIndexableToChild(ch, "name", i)
             
             smartWidget = CommonUIComponents.__CLASSES[childType](master, **ch)
             
             result[(logicalRow, logicalColumn)] = smartWidget
             
-            if multiply.lastChildAddsRow and i == multiply.count - 1:
+            if multiplier.lastChildAddsRow and i == multiplier.count - 1:
                grid["lastColumn"] = True
             
             if grid.pop("lastColumn", False):

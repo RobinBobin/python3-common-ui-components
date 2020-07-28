@@ -13,7 +13,8 @@ setup(
    ],
    description="tkinter.ttk-based UI components",
    install_requires = [
-      "simple-common-utils"
+      "simple-common-utils",
+      "stringcase"
    ],
    long_description=long_description,
    long_description_content_type="text/markdown",

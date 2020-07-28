@@ -18,8 +18,9 @@ class Config(Json):
             if not isinstance(widgetFont, str) and len(widgetFont) > 1:
                widgetFont[1] = StaticUtils.round(widgetFont[1] / 1.2)
    
-   # pylint: disable = no-self-use
    def _upgrader_1_6_7(self):
+      _ = self
+      
       raise Exception("Not implemented")
       
       # # = The storage file must not exist = #

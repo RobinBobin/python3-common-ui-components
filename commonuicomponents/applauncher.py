@@ -64,8 +64,9 @@ class AppLauncher:
       self.__root.title(Config["title"])
       self.__root.protocol("WM_DELETE_WINDOW", self._onDeleteWindow)
    
-   # pylint: disable = no-self-use
    def _createConfigurationInstances(self):
+      _ = self
+      
       return {"config": Config(), "storage": Storage()}
    
    def _createStyles(self):
@@ -105,6 +106,8 @@ class AppLauncher:
          self.__root.style.layout(f"{orient}.T{name}.T{name}", self.__root.style.layout(f"{orient}.T{name}"))
    
    def _getCommonUIComponentsInitParams(self):
+      _ = self
+      
       return dict()
    
    def _loadConfigurationFiles(self):
@@ -112,6 +115,8 @@ class AppLauncher:
          configurationFile.load()
    
    def _maximizeUnderWindows(self, _):
+      _ = self
+      
       user32.ShowWindow(user32.GetForegroundWindow(), 3)
    
    def _onDeleteWindow(self):
