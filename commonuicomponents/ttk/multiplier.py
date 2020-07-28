@@ -23,6 +23,11 @@ class Multiplier:
    def count(self):
       return self.__multiply.get("count", 1)
    
+   @count.setter
+   def count(self, count):
+      # = For LabeledWidgetsContainer and the like = #
+      self.__multiply["count"] = count
+   
    @property
    def lastChildAddsRow(self):
       return self.__multiply.get("lastChildAddsRow", False)

@@ -1,3 +1,4 @@
+from commonutils import Global
 from copy import deepcopy
 from stringcase import constcase, snakecase
 from tkinter import Widget
@@ -29,7 +30,8 @@ class CommonUIComponents:
       }, params, True)
       
       for key, value in params.items():
-         setattr(CommonUIComponents, constcase(snakecase(key)), value)
+         for o in (CommonUIComponents, Global):
+            setattr(o, constcase(snakecase(key)), value)
       
       # pylint: disable = import-outside-toplevel
       SmartWidget._STYLE_INSTANCE = Style()
@@ -39,8 +41,9 @@ class CommonUIComponents:
       from .containers import Container
       from .containers import LabeledContainer
       from .containers import LabeledRadioButtonGroup
+      from .containers import LabeledWidgetsContainer
       from .widgets import Checkbutton
-      from .widgets import Combobox
+      from .widgets import Combobox, CommonCombobox
       from .widgets import Entry
       from .widgets import LabeledScale
       from .widgets import Listbox
@@ -54,10 +57,12 @@ class CommonUIComponents:
       for smartWidget in (
          Checkbutton,
          Combobox,
+         CommonCombobox,
          Container,
          Entry,
          LabeledContainer,
          LabeledRadioButtonGroup,
+         LabeledWidgetsContainer,
          LabeledScale,
          Listbox,
          Scrollbar,

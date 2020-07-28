@@ -25,3 +25,12 @@ class Combobox(SmartWidget, TtkCombobox):
    
    def getValueIndex(self):
       return self["values"].index(self.getValue())
+
+
+class CommonCombobox(Combobox):
+   def __init__(self, master, **kw):
+      for key, value in (("justify", "center"), ("state", "readonly")):
+         if key not in kw:
+            kw[key] = value
+      
+      super().__init__(master, **kw)
