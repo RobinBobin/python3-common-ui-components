@@ -1,4 +1,4 @@
-from commonutils import StaticUtils
+from commonutils import DictPopper, StaticUtils
 from numbers import Number
 # pylint: disable = unused-import
 from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
@@ -10,11 +10,18 @@ class SmartWidget:
    __FONT = None
    
    def __init__(self, master, **kw):
-      self._namePrefix = kw.pop("namePrefix")
       self._parentContainer = master
-      self._smartWidgetStorage = kw.pop("storage")
-      self._smartWidgetGrid = kw.pop("grid")
-      self._smartWidgetName = kw.pop("name", None)
+      
+      self.__getValueWhenStoring \
+      , self._namePrefix         \
+      , self._smartWidgetStorage \
+      , self._smartWidgetGrid    \
+      , self._smartWidgetName = DictPopper(kw)  \
+         .add("getValueWhenStoring", False)     \
+         .add("namePrefix")                     \
+         .add("storage")                        \
+         .add("grid")                           \
+         .add("name", None)
       
       # Can be reset in children.
       self._smartWidgetStyle = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
@@ -109,7 +116,7 @@ class SmartWidget:
       self.__loadValue()
       
       def _set(*_):
-         self._getValueStorage()["value"] = self.__value.get()
+         self._getValueStorage()["value"] = self.getValue() if self.__getValueWhenStoring else self.__value.get()
       
       self.__value.trace_add("write", _set)
    
@@ -132,6 +139,10 @@ class SmartWidget:
    def _setFont(kw):
       if "font" not in kw and SmartWidget.__FONT:
          kw["font"] = SmartWidget.__FONT
+   
+   @staticmethod
+   def _setGetValueWhenStoring(kw):
+      kw["getValueWhenStoring"] = True
    
    @staticmethod
    def _setVariable(kw, defaultTypeName, defaultValueKey = "value", variableKey = None):

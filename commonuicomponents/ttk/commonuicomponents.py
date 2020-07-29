@@ -38,18 +38,22 @@ class CommonUIComponents:
       
       from tkinter import Canvas
       from tkinter.ttk import Button, Label, Radiobutton
-      from .containers import Container
-      from .containers import LabeledContainer
-      from .containers import LabeledRadioButtonGroup
-      from .containers import LabeledWidgetsContainer
-      from .widgets import Checkbutton
-      from .widgets import Combobox, CommonCombobox
-      from .widgets import Entry
-      from .widgets import LabeledScale
-      from .widgets import Listbox
-      from .widgets import Scrollbar
-      from .widgets import Spinbox
-      from .widgets import StatefulButton
+      from .containers import       \
+         Container                  \
+         , LabeledContainer         \
+         , LabeledRadioButtonGroup  \
+         , LabeledWidgetsContainer
+      from .widgets import    \
+         Checkbutton          \
+         , Combobox           \
+         , CommonCombobox     \
+         , Entry              \
+         , LabeledScale       \
+         , Listbox            \
+         , NumberEntry        \
+         , Scrollbar          \
+         , Spinbox            \
+         , StatefulButton
       
       for tkinterBase in (Button, Canvas, Label, Radiobutton):
          CommonUIComponents.wrapClass(tkinterBase)
@@ -65,6 +69,7 @@ class CommonUIComponents:
          LabeledWidgetsContainer,
          LabeledScale,
          Listbox,
+         NumberEntry,
          Scrollbar,
          Spinbox,
          StatefulButton
