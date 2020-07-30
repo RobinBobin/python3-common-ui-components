@@ -114,6 +114,11 @@ class CommonUIComponents:
          print(f"registered {clazz} (TKINTER_BASE: {clazz._TKINTER_BASE}, STYLE: '{clazz.STYLE}'.")
    
    @staticmethod
+   def registerClasses(*classes):
+      for clazz in classes:
+         CommonUIComponents.registerClass(clazz)
+   
+   @staticmethod
    def wrapClass(tkinterBase):
       CommonUIComponents.registerClass(type(tkinterBase.__name__, (SmartWidget, tkinterBase), dict()))
    
