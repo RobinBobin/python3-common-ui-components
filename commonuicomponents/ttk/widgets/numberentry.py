@@ -21,7 +21,7 @@ class NumberEntry(Entry):
       , pythonStylePrefix        \
       , showPrefix               \
       , prefix                   \
-      , unsigned = DictPopper(kw)  \
+      , unsigned = DictPopper(kw)         \
          .add("base", 10)                 \
          .add("bitLength")                \
          .add("max")                      \
@@ -66,7 +66,7 @@ class NumberEntry(Entry):
       regexp = []
       
       if not unsigned:
-         regexp.append(r"[+\-]?")
+         regexp.append(r"[+-]?")
       
       if self.__prefix:
          regexp.append(f"({self.__prefix})")

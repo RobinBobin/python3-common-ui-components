@@ -1,4 +1,4 @@
-from commonutils import Global
+from commonutils import DictPopper, Global
 from copy import deepcopy
 from stringcase import constcase, snakecase
 from tkinter import Widget
@@ -24,18 +24,16 @@ class CommonUIComponents:
    
    @staticmethod
    def init(**params):
-      params = StaticUtils.mergeJson({
-         "debug": False,
-         "multiplierType": Multiplier
-      }, params, True)
-      
-      for key, value in params.items():
+      for key, default in (
+         ("debug", False),
+         ("multiplierType", Multiplier)
+      ):
          for o in (CommonUIComponents, Global):
-            setattr(o, constcase(snakecase(key)), value)
+            setattr(o, constcase(snakecase(key)), params.get(key, default))
       
-      # pylint: disable = import-outside-toplevel
       SmartWidget._STYLE_INSTANCE = Style()
       
+      # pylint: disable = import-outside-toplevel
       from tkinter import Canvas
       from tkinter.ttk import Button, Label, Radiobutton
       from .containers import       \
@@ -138,10 +136,10 @@ class CommonUIComponents:
          childType = child.pop("type")
          multiplier = CommonUIComponents.MULTIPLIER_TYPE(childType, child)
          
-         for i in range(multiplier.count):
+         for index in range(multiplier.count):
             ch = deepcopy(child)
             
-            multiplier.setIndexableToChild(ch, "text", i)
+            multiplier.processChild(ch, index)
             
             grid = StaticUtils.setIfAbsentAndGet(ch, "grid", dict())
             
@@ -155,16 +153,15 @@ class CommonUIComponents:
             ch["storage"] = storage
             ch["namePrefix"] = namePrefix
             
-            multiplier.setIndexableToChild(ch, "name", i)
-            
             smartWidget = CommonUIComponents.__CLASSES[childType](master, **ch)
             
             result[(logicalRow, logicalColumn)] = smartWidget
             
-            if multiplier.lastChildAddsRow and i == multiplier.count - 1:
-               grid["lastColumn"] = True
+            multiplier.postProcessNthChild(ch, index)
             
-            if grid.pop("lastColumn", False):
+            lastColumn, = DictPopper(grid).add("lastColumn")
+            
+            if lastColumn:
                row += smartWidget.rows
                logicalRow += 1
                

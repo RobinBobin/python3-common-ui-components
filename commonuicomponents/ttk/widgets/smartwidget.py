@@ -1,13 +1,12 @@
 from commonutils import DictPopper, StaticUtils
 from numbers import Number
-# pylint: disable = unused-import
-from tkinter import BooleanVar, IntVar, StringVar # _setVariable()
-# pylint: enable = unused-import
+from tkinter import BooleanVar, IntVar, StringVar
 from tkinter.ttk import Widget
 from ...json import Config
 
 class SmartWidget:
    __FONT = None
+   __VALUE_TYPES = { t.__name__: t for t in (BooleanVar, IntVar, StringVar) }
    
    def __init__(self, master, **kw):
       self._parentContainer = master
@@ -146,8 +145,7 @@ class SmartWidget:
    
    @staticmethod
    def _setVariable(kw, defaultTypeName, defaultValueKey = "value", variableKey = None):
-      # pylint: disable = eval-used
-      value = eval(f"{kw.pop('valueType', defaultTypeName)}()")
+      value = SmartWidget.__VALUE_TYPES[kw.pop('valueType', defaultTypeName)]()
       value.set(kw.get(defaultValueKey, value.get()))
       
       kw["value"] = value
