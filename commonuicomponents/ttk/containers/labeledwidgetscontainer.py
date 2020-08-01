@@ -30,7 +30,7 @@ class LabeledWidgetsContainer(Container):
             widgetsCopy = tuple(map(deepcopyAndAddGrid, widgets))
             
             widgetsCopy[0]["grid"]["sticky"] = E
-            widgetsCopy[1]["grid"]["lastColumn"] = True
+            widgetsCopy[1]["grid"]["lastCell"] = True
             
             if noLeftPadding:
                widgetsCopy[1]["grid"]["padx"] = 0

@@ -1,11 +1,17 @@
 from commonutils import DictPopper, Global
 from copy import deepcopy
+from enum import Enum, auto
 from stringcase import constcase, snakecase
 from tkinter import Widget
 from tkinter.ttk import Style
 from .multiplier import Multiplier
 from .widgets import SmartWidget
 from ..staticutils import StaticUtils
+
+class CellInsertionOrder(Enum):
+   leftToRight = auto()
+   topToBottom = auto()
+
 
 class CommonUIComponents:
    __CLASSES = dict()
@@ -143,6 +149,11 @@ class CommonUIComponents:
             
             grid = StaticUtils.setIfAbsentAndGet(ch, "grid", dict())
             
+            if grid.pop("lastColumn", False):
+               grid["lastCell"] = True
+            
+            cellInsertionOrder = CellInsertionOrder.__members__[grid.pop("cellInsertionOrder", CellInsertionOrder.leftToRight.name)]
+            
             skipColumns = grid.pop("skipColumns", 0)
             column += skipColumns
             logicalColumn += skipColumns
@@ -159,17 +170,35 @@ class CommonUIComponents:
             
             multiplier.postProcessNthChild(ch, index)
             
-            lastColumn, = DictPopper(grid).add("lastColumn")
+            lastCell, = DictPopper(grid).add("lastCell")
             
-            if lastColumn:
-               row += smartWidget.rows
-               logicalRow += 1
+            if lastCell:
+               if cellInsertionOrder == CellInsertionOrder.leftToRight:
+                  row += smartWidget.rows
+                  logicalRow += 1
+                  
+                  column = logicalColumn = 0
                
-               column = logicalColumn = 0
+               elif cellInsertionOrder == CellInsertionOrder.topToBottom:
+                  column += smartWidget.columns
+                  logicalColumn += 1
+                  
+                  row = logicalRow = 0
+               
+               else:
+                  raise ValueError()
             
             else:
-               column += smartWidget.columns
-               logicalColumn += 1
+               if cellInsertionOrder == CellInsertionOrder.leftToRight:
+                  column += smartWidget.columns
+                  logicalColumn += 1
+               
+               elif cellInsertionOrder == CellInsertionOrder.topToBottom:
+                  row += smartWidget.rows
+                  logicalRow += 1
+               
+               else:
+                  raise ValueError()
       
       return result
    

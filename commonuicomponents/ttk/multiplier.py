@@ -25,7 +25,7 @@ class Multiplier:
       nthChild = StaticUtils.setIfAbsentAndGet(self.__multiply, "nthChild", dict())
       
       if self.__multiply.pop("lastChildAddsRow", False):
-         nthChild["lastColumn"] = "last"
+         nthChild["lastCell"] = "last"
       
       # = Add count if necessary = #
       text = self.__indexables["text"]
@@ -48,12 +48,17 @@ class Multiplier:
    
    @property
    def lastChildAddsRow(self):
-      return self.__multiply["nthChild"].get("lastColumn", None) == "last"
+      return self.__multiply["nthChild"].get("lastCell", None) == "last"
    
    def postProcessNthChild(self, child, index):
       nthChild = self.__multiply["nthChild"]
       
-      for key in ("lastColumn", ):
+      lastColumn = nthChild.pop("lastColumn", None)
+      
+      if lastColumn:
+         nthChild["lastCell"] = lastColumn
+      
+      for key in ("lastCell", ):
          if key in nthChild and self.__indexMatches(index, nthChild[key]):
             child["grid"][key] = True
    
