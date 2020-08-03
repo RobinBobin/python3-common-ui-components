@@ -31,6 +31,9 @@ class Combobox(SmartWidget, TtkCombobox):
    def getCurrentItem(self):
       return self.__items[self.getValueIndex()]
    
+   def getValueIndexOrItemValue(self):
+      return self.getValueIndex() if self.__itemsAreStrings else self.getCurrentItem().value
+   
    def getValueIndex(self):
       return self["values"].index(self.getValue())
    

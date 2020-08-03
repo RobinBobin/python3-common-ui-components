@@ -77,6 +77,9 @@ class SmartWidget:
       if self.__valueDomains:
          self.__loadValue()
    
+   def traceWrite(self, cb):
+      return self.__value.trace_add("write", lambda *_: cb())
+   
    @property
    def column(self):
       return self._smartWidgetGrid["column"]
@@ -114,10 +117,10 @@ class SmartWidget:
    def _initValueAndTraceAdd(self):
       self.__loadValue()
       
-      def _set(*_):
+      def _set():
          self._getValueStorage()["value"] = self.getValue() if self.__getValueWhenStoring else self.__value.get()
       
-      self.__value.trace_add("write", _set)
+      self.traceWrite(_set)
    
    def __loadValue(self):
       self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "value", self._defaultValue))
