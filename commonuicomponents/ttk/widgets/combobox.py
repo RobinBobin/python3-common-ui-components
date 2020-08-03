@@ -10,7 +10,9 @@ class Combobox(SmartWidget, TtkCombobox):
          
          kw["values"] = list(map(lambda i: self.__class__.formatValueString(values.get("text", ""), i, values.get("offset", 0)), range(values["count"])))
       
-      if not isinstance(kw["values"][0], str):
+      self.__itemsAreStrings = isinstance(kw["values"][0], str)
+      
+      if not self.__itemsAreStrings:
          self.__items = kw["values"]
       
       if "value" not in kw:
@@ -21,6 +23,10 @@ class Combobox(SmartWidget, TtkCombobox):
       SmartWidget.__init__(self, master, **kw)
       
       self._initValueAndTraceAdd()
+   
+   @property
+   def itemsAreStrings(self):
+      return self.__itemsAreStrings
    
    def getCurrentItem(self):
       return self.__items[self.getValueIndex()]
