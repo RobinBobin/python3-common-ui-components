@@ -28,6 +28,9 @@ class Combobox(SmartWidget, TtkCombobox):
    def itemsAreStrings(self):
       return self.__itemsAreStrings
    
+   def bindOnSelected(self, handler):
+      self.bind("<<ComboboxSelected>>", lambda _: handler())
+   
    def getCurrentItem(self):
       return self.__items[self.getValueIndex()]
    

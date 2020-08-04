@@ -42,10 +42,12 @@ class CommonUIComponents:
       # pylint: disable = import-outside-toplevel
       from tkinter import Canvas
       from tkinter.ttk import Button, Label, Radiobutton
-      from .containers import       \
-         Container                  \
-         , LabeledContainer         \
-         , LabeledRadioButtonGroup  \
+      from .containers import             \
+         Container                        \
+         , LabeledContainer               \
+         , LabeledRadioButtonGroup        \
+         , LabeledWidgetContainer         \
+         , LabeledWidgetLabeledContainer  \
          , LabeledWidgetsContainer
       from .widgets import    \
          Checkbutton          \
@@ -70,7 +72,9 @@ class CommonUIComponents:
          Entry,
          LabeledContainer,
          LabeledRadioButtonGroup,
+         LabeledWidgetContainer,
          LabeledWidgetsContainer,
+         LabeledWidgetLabeledContainer,
          LabeledScale,
          Listbox,
          NumberEntry,

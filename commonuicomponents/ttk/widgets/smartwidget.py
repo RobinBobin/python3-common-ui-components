@@ -77,8 +77,8 @@ class SmartWidget:
       if self.__valueDomains:
          self.__loadValue()
    
-   def traceWrite(self, cb):
-      return self.__value.trace_add("write", lambda *_: cb())
+   def traceWrite(self, handler):
+      return self.__value.trace_add("write", lambda *_: handler())
    
    @property
    def column(self):
