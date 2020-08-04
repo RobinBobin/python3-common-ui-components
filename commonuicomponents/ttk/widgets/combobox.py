@@ -42,7 +42,10 @@ class Combobox(SmartWidget, TtkCombobox):
    
    @staticmethod
    def formatValueString(text, i, offset):
-      return f"{text}{i + offset}"
+      if "{}" not in text:
+         text += "{}"
+      
+      return text.format(i + offset)
 
 
 class CommonCombobox(Combobox):

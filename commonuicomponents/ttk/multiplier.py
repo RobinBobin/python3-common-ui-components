@@ -76,8 +76,6 @@ class Multiplier:
                offsetKey = f"offsetOfIndexIn{key.title()}"
                multiply["count"] = 1
                multiply[offsetKey] = StaticUtils.setIfAbsentAndGet(multiply, offsetKey, Multiplier.__DEFAULT_OFFSETS.get(key, 0)) + index
-      
-      # print(child)
    
    def setIndexableToChild(self, child, key, index):
       indexable = self.__indexables[key]
@@ -97,7 +95,10 @@ class Multiplier:
    def _formatIndexable(self, indexable, index, offset):
       _ = self
       
-      return f"{indexable}{index + offset}"
+      if "{}" not in indexable:
+         indexable += "{}"
+         
+      return indexable.format(index + offset)
    
    def __indexMatches(self, index, value):
       result = False
