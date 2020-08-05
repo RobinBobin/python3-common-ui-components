@@ -48,17 +48,18 @@ class CommonUIComponents:
          , LabeledRadioButtonGroup        \
          , LabeledWidgetContainer         \
          , LabeledWidgetLabeledContainer  \
-         , LabeledWidgetsContainer
-      from .widgets import    \
-         Checkbutton          \
-         , Combobox           \
-         , CommonCombobox     \
-         , Entry              \
-         , LabeledScale       \
-         , Listbox            \
-         , NumberEntry        \
-         , Scrollbar          \
-         , Spinbox            \
+         , LabeledWidgetsContainer        \
+         , TimePicker
+      from .widgets import \
+         Checkbutton       \
+         , Combobox        \
+         , CommonCombobox  \
+         , Entry           \
+         , LabeledScale    \
+         , Listbox         \
+         , NumberEntry     \
+         , Scrollbar       \
+         , Spinbox         \
          , StatefulButton
       
       for tkinterBase in (Button, Canvas, Label, Radiobutton):
@@ -80,7 +81,8 @@ class CommonUIComponents:
          NumberEntry,
          Scrollbar,
          Spinbox,
-         StatefulButton
+         StatefulButton,
+         TimePicker
       ):
          CommonUIComponents.registerClass(smartWidget)
    
