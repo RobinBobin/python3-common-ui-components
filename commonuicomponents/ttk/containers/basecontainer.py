@@ -13,6 +13,16 @@ class BaseContainer(SmartWidget):
       
       self.__padAllChildren = kw.pop("padAllChildren", True)
       
+      # = propagateToChildren = #
+      for key in kw.get("transferToChildren", []):
+         for child in self._baseContainerChildren:
+            child[key] = kw[key]
+         
+         if key != "transferToChildren":
+            kw.pop(key)
+      
+      kw.pop("propagateToChildren", None)
+      
       SmartWidget.__init__(self, master, **kw)
       
       if not isinstance(master, BaseContainer):

@@ -15,12 +15,14 @@ class SmartWidget:
       , self._namePrefix         \
       , self._smartWidgetStorage \
       , self._smartWidgetGrid    \
-      , self._smartWidgetName = DictPopper(kw)  \
-         .add("getValueWhenStoring", False)     \
-         .add("namePrefix")                     \
-         .add("storage")                        \
-         .add("grid")                           \
-         .add("name", None)
+      , self._smartWidgetName    \
+      , somethingWasTransferred = DictPopper(kw)   \
+         .add("getValueWhenStoring", False)        \
+         .add("namePrefix")                        \
+         .add("storage")                           \
+         .add("grid")                              \
+         .add("name", None)                        \
+         .add("transferToChildren", None)
       
       # Can be reset in children.
       self._smartWidgetStyle = StaticUtils.mergeJson(*map(lambda styleName: SmartWidget._STYLE_INSTANCE.configure(styleName) or dict(), [self.__class__.STYLE, kw.get("style", "")]), True)
@@ -56,7 +58,11 @@ class SmartWidget:
       self.__valueDomains = tuple(map(self.__processValueDomains, kw.pop("valueDomains", [])))
       
       if not self.__value and self.__valueDomains:
-         raise ValueError(f"'valueDomains' specified for '{self._smartWidgetName}', but there's no value to serialize")
+         if somethingWasTransferred:
+            self.__valueDomains = tuple()
+         
+         else:
+            raise ValueError(f"'valueDomains' specified for '{self._smartWidgetName}', but there's no value to serialize")
       
       if self.__class__._TKINTER_BASE:
          if issubclass(self.__class__._TKINTER_BASE, Widget) and "style" not in kw:
