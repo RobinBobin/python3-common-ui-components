@@ -47,20 +47,20 @@ class NumberEntry(Entry):
             raise ValueError()
       
       # = base / prefix = #
-      baseData = NumberEntry.__BASE_DATA.get(self.__base)
+      self.__baseData = NumberEntry.__BASE_DATA.get(self.__base)
       
       if prefix is not None:
          pass
       
       elif pythonStylePrefix:
-         prefix = baseData[1](0)[:2]
+         prefix = self.__baseData[1](0)[:2]
       
       else:
-         prefix = baseData[0]
+         prefix = self.__baseData[0]
       
-      baseData = (prefix, *baseData[1:])
+      self.__baseData = (prefix, *self.__baseData[1:])
       
-      self.__prefix = baseData[0] if showPrefix else ""
+      self.__prefix = self.__baseData[0] if showPrefix else ""
       
       # = regexp = #
       regexp = []
@@ -71,7 +71,7 @@ class NumberEntry(Entry):
       if self.__prefix:
          regexp.append(f"({self.__prefix})")
       
-      regexp.append(f"[{baseData[2]}]*$")
+      regexp.append(f"[{self.__baseData[2]}]*$")
       
       self.__pattern = re.compile("".join(regexp))
       
@@ -80,18 +80,7 @@ class NumberEntry(Entry):
       
       super().__init__(master, **kw)
       
-      rawValue = self.getRawValue()
-      
-      value = rawValue.get()
-      
-      if isinstance(value, str):
-         value = 0 if not value else int(value)
-      
-      isNegative = value < 0
-      
-      value = f"{'-' if isNegative else ''}{self.__prefix}{baseData[1](value)[2 + (1 if isNegative else 0):]}"
-      
-      rawValue.set(value)
+      self.__setValue()
       
       self["validate"] = "key"
       self["validatecommand"] = (self.register(self.onValidate), "%P")
@@ -116,8 +105,29 @@ class NumberEntry(Entry):
       
       return True
    
+   def _loadValue(self):
+      super()._loadValue()
+      
+      self.__setValue()
+   
    def __getValue(self, value):
       if not value or len(value) == len(self.__prefix) + (1 if value.startswith(("+", "-")) else 0):
          value += "0"
       
       return int(value, self.__base)
+   
+   def __setValue(self):
+      rawValue = self.getRawValue()
+      
+      value = rawValue.get()
+      
+      if not isinstance(value, str):
+         raise ValueError(type(value))
+      
+      value = 0 if not value else int(value)
+      
+      isNegative = value < 0
+      
+      value = f"{'-' if isNegative else ''}{self.__prefix}{self.__baseData[1](value)[2 + (1 if isNegative else 0):]}"
+      
+      rawValue.set(value)

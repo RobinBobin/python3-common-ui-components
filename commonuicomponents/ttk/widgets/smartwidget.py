@@ -75,7 +75,7 @@ class SmartWidget:
    
    def reloadValue(self):
       if self.__valueDomains:
-         self.__loadValue()
+         self._loadValue()
    
    def traceWrite(self, handler):
       return self.__value.trace_add("write", lambda *_: handler())
@@ -117,10 +117,13 @@ class SmartWidget:
    def _initValueAndTraceAdd(self):
       self.__loadValue()
       
-      def _set():
-         self._getValueStorage()["value"] = self.getValue() if self.__getValueWhenStoring else self.__value.get()
-      
-      self.traceWrite(_set)
+      self.traceWrite(self._saveValue)
+   
+   def _loadValue(self):
+      self.__loadValue()
+   
+   def _saveValue(self):
+      self._getValueStorage()["value"] = self.getValue() if self.__getValueWhenStoring else self.__value.get()
    
    def __loadValue(self):
       self.__value.set(StaticUtils.setIfAbsentAndGet(self._getValueStorage(), "value", self._defaultValue))
