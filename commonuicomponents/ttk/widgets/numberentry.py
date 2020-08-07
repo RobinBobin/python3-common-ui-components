@@ -14,13 +14,13 @@ class NumberEntry(Entry):
    }
    
    def __init__(self, master, **kw):
-      self.__base                \
-      , bitLength                \
-      , self.__max               \
-      , self.__min               \
-      , pythonStylePrefix        \
-      , showPrefix               \
-      , prefix                   \
+      self.__base          \
+      , bitLength          \
+      , self.__max         \
+      , self.__min         \
+      , pythonStylePrefix  \
+      , showPrefix         \
+      , prefix             \
       , unsigned = DictPopper(kw)         \
          .add("base", 10)                 \
          .add("bitLength")                \
@@ -129,5 +129,8 @@ class NumberEntry(Entry):
       isNegative = value < 0
       
       value = f"{'-' if isNegative else ''}{self.__prefix}{self.__baseData[1](value)[2 + (1 if isNegative else 0):]}"
+      
+      if self.uppercase:
+         value = value.upper()
       
       rawValue.set(value)
