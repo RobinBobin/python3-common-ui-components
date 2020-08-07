@@ -13,12 +13,17 @@ class StatefulButton(SmartWidget, Button):
       if hasValueBuffer:
          self._initValueAndTraceAdd()
       
-      self._saveValue()
+      self.__setText()
    
    def nextState(self):
       self.getRawValue().set((self.getValue() + 1) % len(self.__states))
+      
+      self.__setText()
    
    def _saveValue(self):
       super()._saveValue()
       
+      self.__setText()
+   
+   def __setText(self):
       self["text"] = self.__states[self.getValue()]
