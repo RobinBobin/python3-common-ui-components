@@ -1,4 +1,4 @@
-from commonutils import StaticUtils
+from commonutils import Global, StaticUtils
 from os import sys, path
 from tkinter import Tk
 from tkinter.ttk import Notebook, Style
@@ -48,6 +48,8 @@ class AppLauncher:
       baseTabLoader.load(self.__notebook, Config.INSTANCE.json, Storage.INSTANCE.json)
       
       self.__notebook.place(relwidth = 1, relheight = 1)
+      
+      Global.appLauncher = self
       
       self.__root.mainloop()
    
