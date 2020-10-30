@@ -1,3 +1,4 @@
+from .animatedgif import AnimatedGif
 from .appbuilder import AppBuilder
 from .applauncher import AppLauncher
 from .basetab import BaseTab
